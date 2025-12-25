@@ -8,7 +8,24 @@ const Signup = () => {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [number, setNumber] = useState('')
+    const [error, setError] = useState('')
+
     const handleSignup = () => {
+        if(firstName.trim() === ''){
+            setError('First Name is required *')
+            return;
+        }
+
+        if(lastName.trim() === ''){
+            setError('Last Name is required *')
+            return;
+        }
+
+
+        if(number.trim() === ''){
+            setError('Number is required *')
+            return;
+        }
         console.log('Signup')
     }
 
@@ -17,26 +34,58 @@ const Signup = () => {
             <Text>Keepto</Text>
             <View style={styles.inputContainer}>
                 <Text>Create an account?</Text>
+
                 <View style={styles.input}>
                     <Text>First Name</Text>
-                    <TextInput style={styles.inputText}/>
+                    <TextInput
+                        placeholder='Mr.John'
+                        value={firstName}
+                        onChangeText={setFirstName}
+                        style={styles.inputText} />
+                        {error ? <Text>{error}</Text> : null}
                 </View>
+
                 <View style={styles.input}>
                     <Text>Last Name</Text>
-                    <TextInput style={styles.inputText}/>
+                    <TextInput
+                    placeholder='Deo'
+                    value={lastName}
+                    onChangeText={setLastName}
+                    style={styles.inputText} />
                 </View>
+
                 <View style={styles.input}>
                     <Text>Email</Text>
-                    <TextInput style={styles.inputText}/>
+                    <TextInput
+                    placeholder='example@mail.com'
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.inputText} />
                 </View>
+                <View style={styles.input}>
+                    <Text>Phone Number</Text>
+                    <TextInput
+                    value={number}
+                    onChangeText={setNumber}
+                    style={styles.inputText} />
+                </View>
+                
                 <View style={styles.input}>
                     <Text>Password</Text>
-                    <TextInput style={styles.inputText}/>
+                    <TextInput
+                    value={password}
+                    onChangeText={setPassword}
+                    style={styles.inputText} />
                 </View>
+
                 <View style={styles.input}>
                     <Text>Confirm Password</Text>
-                    <TextInput style={styles.inputText}/>
+                    <TextInput
+                     value={confirmPassword}
+                     onChangeText={setConfirmPassword}
+                     style={styles.inputText} />
                 </View>
+
                 <TouchableOpacity onPress={handleSignup}><Text>Signup</Text></TouchableOpacity>
             </View>
         </View>
@@ -50,18 +99,21 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#e9ecf4',
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
     },
     inputContainer: {
         backgroundColor: '#fff',
+        justifyContent: 'center'
+
     },
     input: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+        
     },
     inputText: {
+       color:"red",
         fontSize: 16,
         fontWeight: 'bold',
+        backgroundColor: '#f4f6fa',
+        borderRadius: 15
     },
 })
