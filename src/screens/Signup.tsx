@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from 'react-native'
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, SafeAreaView, KeyboardAvoidingView } from 'react-native'
 import React, { useState } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
@@ -16,7 +16,7 @@ const Signup = () => {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [termsAccepted, setTermsAccepted] = useState(false)
-    const [data, setData] = useState()
+    const [data, setData] = useState<any>(null)
 
 
     const [errors, setErrors] = useState({
@@ -164,26 +164,48 @@ const Signup = () => {
         if (isValid) {
             // Proceed with signup
             setLoading(true)
-            // Add your signup logic here
-            console.log('Signup successful')
+            
+            // Store form data in data state
+            const formData = {
+                firstName,
+                lastName,
+                email,
+                password,
+                phoneNumber: number,
+                gender,
+                dateOfBirth: dob,
+                termsAccepted,
+                createdAt: new Date().toISOString()
+            }
+            
+            setData(formData)
+            console.log('Signup successful', formData)
+            // You can now send this data to your database
         }
     }
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton}>
-                    <Text style={styles.backIcon}>←</Text>
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Keepto</Text>
-            </View>
-
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
+        <SafeAreaView style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.keyboardView}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
+                {/* Header */}
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.backButton}>
+                        <Text style={styles.backIcon}>←</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Keepto</Text>
+                    <View style={styles.headerSpacer} />
+                </View>
+
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                >
                 {/* Main Card */}
                 <View style={styles.card}>
                     <Text style={styles.title}>Create an Account?</Text>
@@ -373,8 +395,9 @@ const Signup = () => {
                     {/* Or Sign in with */}
                     <Text style={styles.orText}>Or Sign in with</Text>
                 </View>
-            </ScrollView>
-        </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     )
 }
 
@@ -385,11 +408,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F3F4F6',
     },
+    keyboardView: {
+        flex: 1,
+    },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingTop: Platform.OS === 'ios' ? 50 : 20,
+        paddingTop: Platform.OS === 'ios' ? 10 : 20,
         paddingBottom: 16,
         backgroundColor: '#F3F4F6',
     },
@@ -400,17 +427,20 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 12,
     },
     backIcon: {
         fontSize: 20,
         color: '#000000',
     },
     headerTitle: {
-        fontSize: 24,
+        fontSize: 32,
         fontWeight: 'bold',
         color: '#007AFF',
-        textAlign: 'center'
+        flex: 1,
+        textAlign: 'center',
+    },
+    headerSpacer: {
+        width: 40,
     },
     scrollView: {
         flex: 1,
