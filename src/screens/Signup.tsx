@@ -1,5 +1,6 @@
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
+import DateTimePicker from '@react-native-community/datetimepicker'
 
 const Signup = () => {
     const [firstName, setFirstName] = useState('')
@@ -11,22 +12,30 @@ const Signup = () => {
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [gender, setGender] = useState(null)
+    const [dob, setDob] = useState(new Date())
+    const [showPicker, setShowPicker] = useState(false)
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    const onDateChange = (event, selectedDate) => {
+        setShowPicker(Platform.OS === 'ios')
+        if (selectedDate) {
+            setDob(selectedDate)
+        }
+    }
     const RadioButton = ({ label, value }) => {
         (
             <TouchableOpacity
-            style={styles.radioContainer}
-            onPress={() => setGender(value)}
-        >
+                style={styles.radioContainer}
+                onPress={() => setGender(value)}
+            >
 
-            <View style={[styles.outerCircle, { borderColor: gender === value ? '#0D9488' : '#D1D5DB' }]}>
-                {gender === value && <View style={styles.innerCircle} />}
-            </View>
-            <Text style={styles.radioLabel}>{label}</Text>
+                <View style={[styles.outerCircle, { borderColor: gender === value ? '#0D9488' : '#D1D5DB' }]}>
+                    {gender === value && <View style={styles.innerCircle} />}
+                </View>
+                <Text style={styles.radioLabel}>{label}</Text>
 
-        </TouchableOpacity>
+            </TouchableOpacity>
         )
     }
 
@@ -75,7 +84,7 @@ const Signup = () => {
             setError("Please enter a valid email address.");
             return;
         }
-        if(gender === null){
+        if (gender === null) {
             setError('Please select gender')
             return;
         }
@@ -107,12 +116,35 @@ const Signup = () => {
                         style={styles.inputText} />
                     {error ? <Text>{error}</Text> : null}
                 </View>
+                <View style={styles.formSection}>
 
+                    {/* --- DATE OF BIRTH --- */}
+                    <Text style={styles.label}>Date of Birth</Text>
+                    <TouchableOpacity
+                        style={styles.input}
+                        onPress={() => setShowPicker(true)}
+                    >
+                        <Text style={{ color: '#374151' }}>{dob.toDateString()}</Text>
+                    </TouchableOpacity>
+
+                    {showPicker && (
+                        <DateTimePicker
+                            value={dob}
+                            mode="date"
+                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                            maximumDate={new Date()} // Prevent picking future dates
+                            onChange={onDateChange}
+                        />
+                    )}
+                </View>
                 <View>
-
                     <Text>Gender</Text>
                     <RadioButton label='Male' value='Male' />
+                    <RadioButton label='Female' value='Female' />
+                </View>
 
+                <View>
+                    <Text>Date Of Birth</Text>
                 </View>
 
 
