@@ -179,15 +179,24 @@ const Signup = () => {
             }
             
             setData(formData)
+            setFirstName('')
+            setLastName('')
+            setEmail('')
+            setPassword('')
+            setConfirmPassword('')
+            setGender(null)
+            setDob(new Date())
+            setNumber('')
             console.log('Signup successful', formData)
             // You can now send this data to your database
+
         }
     }
 
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'undefined'}
                 style={styles.keyboardView}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
