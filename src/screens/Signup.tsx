@@ -1,4 +1,4 @@
-import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
@@ -9,32 +9,51 @@ const Signup = () => {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [number, setNumber] = useState('')
-    const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
-    const [gender, setGender] = useState(null)
+    const [gender, setGender] = useState<string | null>(null)
     const [dob, setDob] = useState(new Date())
     const [showPicker, setShowPicker] = useState(false)
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [termsAccepted, setTermsAccepted] = useState(false)
+    const [data, setData] = useState()
+
+
+    const [errors, setErrors] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        number: '',
+        gender: '',
+        dob: '',
+        terms: ''
+    })
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const onDateChange = (event, selectedDate) => {
+    const onDateChange = (event: any, selectedDate?: Date) => {
         setShowPicker(Platform.OS === 'ios')
         if (selectedDate) {
             setDob(selectedDate)
+            setErrors(prev => ({ ...prev, dob: '' }))
         }
     }
-    const RadioButton = ({ label, value }) => {
-        (
+
+    const RadioButton = ({ label, value }: { label: string, value: string }) => {
+        return (
             <TouchableOpacity
                 style={styles.radioContainer}
-                onPress={() => setGender(value)}
+                onPress={() => {
+                    setGender(value)
+                    setErrors(prev => ({ ...prev, gender: '' }))
+                }}
             >
-
-                <View style={[styles.outerCircle, { borderColor: gender === value ? '#0D9488' : '#D1D5DB' }]}>
+                <View style={[styles.outerCircle, { borderColor: gender === value ? '#007AFF' : '#D1D5DB' }]}>
                     {gender === value && <View style={styles.innerCircle} />}
                 </View>
                 <Text style={styles.radioLabel}>{label}</Text>
-
             </TouchableOpacity>
         )
     }
@@ -42,7 +61,7 @@ const Signup = () => {
 
 
 
-    const calculateAge = (birthDate) => {
+    const calculateAge = (birthDate: Date) => {
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -52,7 +71,8 @@ const Signup = () => {
         return age;
     };
 
-    const getStrength = (pw) => {
+
+    const getStrength = (pw: string) => {
         if (pw.length === 0) return { label: '', color: 'transparent' };
 
         const hasLetters = /[a-zA-Z]/.test(pw);
@@ -77,138 +97,283 @@ const Signup = () => {
 
     const strength = getStrength(password);
 
+    const validateField = (field: string, value: any) => {
+        let error = ''
+        switch (field) {
+            case 'firstName':
+                if (!value.trim()) error = 'First Name is required *'
+                break
+            case 'lastName':
+                if (!value.trim()) error = 'Last Name is required *'
+                break
+            case 'email':
+                if (!value.trim()) {
+                    error = 'Email is required *'
+                } else if (!emailRegex.test(value)) {
+                    error = 'Please enter a valid email address'
+                }
+                break
+            case 'password':
+                if (!value.trim()) {
+                    error = 'Password is required *'
+                } else if (value.length < 6) {
+                    error = 'Password must be at least 6 characters'
+                }
+                break
+            case 'confirmPassword':
+                if (!value.trim()) {
+                    error = 'Please confirm your password *'
+                } else if (value !== password) {
+                    error = 'Passwords do not match'
+                }
+                break
+            case 'number':
+                if (!value.trim()) error = 'Phone Number is required *'
+                break
+            case 'gender':
+                if (value === null) error = 'Please select gender'
+                break
+            case 'dob':
+                const userAge = calculateAge(dob)
+                if (userAge < 18) {
+                    error = 'You must be at least 18 years old to register'
+                }
+                break
+            case 'terms':
+                if (!value) error = 'You must agree to the Terms of Service'
+                break
+        }
+        setErrors(prev => ({ ...prev, [field]: error }))
+        return error === ''
+    }
+
     const handleSignup = () => {
-        if (firstName.trim() === '') {
-            setError('First Name is required *')
-            return;
-        }
+        const userAge = calculateAge(dob)
 
-        if (lastName.trim() === '') {
-            setError('Last Name is required *')
-            return;
-        }
+        const isValid =
+            validateField('firstName', firstName) &&
+            validateField('lastName', lastName) &&
+            validateField('email', email) &&
+            validateField('password', password) &&
+            validateField('confirmPassword', confirmPassword) &&
+            validateField('number', number) &&
+            validateField('gender', gender) &&
+            validateField('dob', userAge >= 18) &&
+            validateField('terms', termsAccepted)
 
-
-        if (number.trim() === '') {
-            setError('Number is required *')
-            return;
+        if (isValid) {
+            // Proceed with signup
+            setLoading(true)
+            // Add your signup logic here
+            console.log('Signup successful')
         }
-        if (!emailRegex.test(email)) {
-            setError("Please enter a valid email address.");
-            return;
-        }
-        if (gender === null) {
-            setError('Please select gender')
-            return;
-        }
-
     }
 
     return (
         <View style={styles.container}>
-            <Text>Keepto</Text>
-            <View style={styles.inputContainer}>
-                <Text>Create an account?</Text>
+            {/* Header */}
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.backButton}>
+                    <Text style={styles.backIcon}>←</Text>
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Keepto</Text>
+            </View>
 
-                <View style={styles.input}>
-                    <Text>First Name</Text>
-                    <TextInput
-                        placeholder='Mr.John'
-                        value={firstName}
-                        onChangeText={setFirstName}
-                        style={styles.inputText} />
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
+                {/* Main Card */}
+                <View style={styles.card}>
+                    <Text style={styles.title}>Create an Account?</Text>
 
-                </View>
+                    {/* First Name */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>First Name</Text>
+                        <TextInput
+                            placeholder='Johan orindo'
+                            placeholderTextColor='#9CA3AF'
+                            value={firstName}
+                            onChangeText={(text) => {
+                                setFirstName(text)
+                                if (errors.firstName) validateField('firstName', text)
+                            }}
+                            style={[styles.input, errors.firstName ? styles.inputError : null]}
+                        />
+                        {errors.firstName ? <Text style={styles.errorText}>{errors.firstName}</Text> : null}
+                    </View>
 
-                <View style={styles.input}>
-                    <Text>Last Name</Text>
-                    <TextInput
-                        placeholder='Deo'
-                        value={lastName}
-                        onChangeText={setLastName}
-                        style={styles.inputText} />
-                    {error ? <Text>{error}</Text> : null}
-                </View>
-                <View style={styles.formSection}>
+                    {/* Last Name */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Last Name</Text>
+                        <TextInput
+                            placeholder='Last Name'
+                            placeholderTextColor='#9CA3AF'
+                            value={lastName}
+                            onChangeText={(text) => {
+                                setLastName(text)
+                                if (errors.lastName) validateField('lastName', text)
+                            }}
+                            style={[styles.input, errors.lastName ? styles.inputError : null]}
+                        />
+                        {errors.lastName ? <Text style={styles.errorText}>{errors.lastName}</Text> : null}
+                    </View>
 
-                    {/* --- DATE OF BIRTH --- */}
-                    <Text style={styles.label}>Date of Birth</Text>
+                    {/* Date of Birth */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Date of Birth</Text>
+                        <TouchableOpacity
+                            style={[styles.input, styles.dateInput, errors.dob ? styles.inputError : null]}
+                            onPress={() => setShowPicker(true)}
+                        >
+                            <Text style={styles.dateText}>{dob.toDateString()}</Text>
+                        </TouchableOpacity>
+                        {showPicker && (
+                            <DateTimePicker
+                                value={dob}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                maximumDate={new Date()}
+                                onChange={onDateChange}
+                            />
+                        )}
+                        {errors.dob ? <Text style={styles.errorText}>{errors.dob}</Text> : null}
+                    </View>
+
+                    {/* Gender */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Gender</Text>
+                        <View style={styles.radioGroup}>
+                            <RadioButton label='Male' value='Male' />
+                            <RadioButton label='Female' value='Female' />
+                        </View>
+                        {errors.gender ? <Text style={styles.errorText}>{errors.gender}</Text> : null}
+                    </View>
+
+                    {/* Phone Number */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Phone Number</Text>
+                        <TextInput
+                            placeholder='Phone Number'
+                            placeholderTextColor='#9CA3AF'
+                            value={number}
+                            keyboardType='phone-pad'
+                            onChangeText={(text) => {
+                                setNumber(text)
+                                if (errors.number) validateField('number', text)
+                            }}
+                            style={[styles.input, errors.number ? styles.inputError : null]}
+                        />
+                        {errors.number ? <Text style={styles.errorText}>{errors.number}</Text> : null}
+                    </View>
+
+                    {/* Email */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Email</Text>
+                        <TextInput
+                            placeholder='joedoo75@gmail.com'
+                            placeholderTextColor='#9CA3AF'
+                            value={email}
+                            onChangeText={(text) => {
+                                setEmail(text)
+                                if (errors.email) validateField('email', text)
+                            }}
+                            keyboardType='email-address'
+                            autoCapitalize='none'
+                            style={[styles.input, errors.email ? styles.inputError : null]}
+                        />
+                        {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+                    </View>
+
+                    {/* Password */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Password</Text>
+                        <View style={styles.passwordContainer}>
+                            <TextInput
+                                placeholder='Password'
+                                placeholderTextColor='#9CA3AF'
+                                value={password}
+                                secureTextEntry={!showPassword}
+                                onChangeText={(text) => {
+                                    setPassword(text)
+                                    if (errors.password) validateField('password', text)
+                                }}
+                                style={[styles.input, styles.passwordInput, errors.password ? styles.inputError : null]}
+                            />
+                            <TouchableOpacity
+                                style={styles.eyeIcon}
+                                onPress={() => setShowPassword(!showPassword)}
+                            >
+                                <Text style={styles.eyeIconText}>{showPassword ? '👁' : '👁‍🗨'}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+                        {password.length > 0 && !errors.password && (
+                            <Text style={[styles.strengthText, { color: strength.color }]}>
+                                Password Strength: {strength.label}
+                            </Text>
+                        )}
+                    </View>
+
+                    {/* Confirm Password */}
+                    <View style={styles.fieldContainer}>
+                        <Text style={styles.label}>Confirm Password</Text>
+                        <View style={styles.passwordContainer}>
+                            <TextInput
+                                placeholder='Confirm Password'
+                                placeholderTextColor='#9CA3AF'
+                                value={confirmPassword}
+                                secureTextEntry={!showConfirmPassword}
+                                onChangeText={(text) => {
+                                    setConfirmPassword(text)
+                                    if (errors.confirmPassword) validateField('confirmPassword', text)
+                                }}
+                                style={[styles.input, styles.passwordInput, errors.confirmPassword ? styles.inputError : null]}
+                            />
+                            <TouchableOpacity
+                                style={styles.eyeIcon}
+                                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                                <Text style={styles.eyeIconText}>{showConfirmPassword ? '👁' : '👁‍🗨'}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        {errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
+                    </View>
+
+                    {/* Terms of Service */}
+                    <View style={styles.fieldContainer}>
+                        <TouchableOpacity
+                            style={styles.checkboxContainer}
+                            onPress={() => {
+                                setTermsAccepted(!termsAccepted)
+                                if (errors.terms) validateField('terms', !termsAccepted)
+                            }}
+                        >
+                            <View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
+                                {termsAccepted && <Text style={styles.checkmark}>✓</Text>}
+                            </View>
+                            <Text style={styles.checkboxLabel}>
+                                I agree to the{' '}
+                                <Text style={styles.linkText}>Terms of Service</Text>
+                            </Text>
+                        </TouchableOpacity>
+                        {errors.terms ? <Text style={styles.errorText}>{errors.terms}</Text> : null}
+                    </View>
+
+                    {/* Create Account Button */}
                     <TouchableOpacity
-                        style={styles.input}
-                        onPress={() => setShowPicker(true)}
+                        style={[styles.button, loading && styles.buttonDisabled]}
+                        onPress={handleSignup}
+                        disabled={loading}
                     >
-                        <Text style={{ color: '#374151' }}>{dob.toDateString()}</Text>
+                        <Text style={styles.buttonText}>Create account</Text>
                     </TouchableOpacity>
 
-                    {showPicker && (
-                        <DateTimePicker
-                            value={dob}
-                            mode="date"
-                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                            maximumDate={new Date()} // Prevent picking future dates
-                            onChange={onDateChange}
-                        />
-                    )}
+                    {/* Or Sign in with */}
+                    <Text style={styles.orText}>Or Sign in with</Text>
                 </View>
-                <View>
-                    <Text>Gender</Text>
-                    <RadioButton label='Male' value='Male' />
-                    <RadioButton label='Female' value='Female' />
-                </View>
-
-                <View>
-                    <Text>Date Of Birth</Text>
-                </View>
-
-
-                <View style={styles.input}>
-                    <Text>Phone Number</Text>
-                    <TextInput
-                        value={number}
-                        keyboardType='decimal-pad'
-                        onChangeText={setNumber}
-                        style={styles.inputText} />
-                </View>
-
-                <View style={styles.input}>
-                    <Text>Email</Text>
-                    <TextInput
-                        placeholder='example@mail.com'
-                        value={email}
-                        onChangeText={setEmail}
-                        style={styles.inputText} />
-                </View>
-
-                <View style={styles.input}>
-                    <Text>Password</Text>
-                    <TextInput
-                        value={password}
-                        secureTextEntry
-                        onChangeText={setPassword}
-                        style={styles.inputText} />
-
-                    {password.length > 0 && (
-                        <Text style={[styles.strengthText, { color: strength.color }]}>
-                            Password Strength: {strength.label}
-                        </Text>
-                    )}
-                </View>
-
-                <View style={styles.input}>
-                    <Text>Confirm Password</Text>
-                    <TextInput
-                        value={confirmPassword}
-                        secureTextEntry
-                        onChangeText={setConfirmPassword}
-                        style={styles.inputText} />
-                    {/* Match Validation Error */}
-                    {confirmPassword.length > 0 && password !== confirmPassword && (
-                        <Text style={styles.errorText}>Passwords do not match</Text>
-                    )}
-                </View>
-
-                <TouchableOpacity onPress={handleSignup}><Text>Signup</Text></TouchableOpacity>
-            </View>
+            </ScrollView>
         </View>
     )
 }
@@ -218,30 +383,123 @@ export default Signup
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#e9ecf4',
-        alignItems: 'center',
-        // justifyContent: 'center',
+        backgroundColor: '#F3F4F6',
     },
-    inputContainer: {
-        backgroundColor: '#fff',
-        justifyContent: 'center'
-
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingTop: Platform.OS === 'ios' ? 50 : 20,
+        paddingBottom: 16,
+        backgroundColor: '#F3F4F6',
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#FFFFFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    backIcon: {
+        fontSize: 20,
+        color: '#000000',
+    },
+    headerTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#007AFF',
+        textAlign: 'center'
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingHorizontal: 20,
+        paddingBottom: 40,
+    },
+    card: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 24,
+        marginTop: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#000000',
+        marginBottom: 24,
+    },
+    fieldContainer: {
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#374151',
+        marginBottom: 8,
     },
     input: {
-
-    },
-    inputText: {
-        color: "red",
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1,
+        borderColor: '#E5E7EB',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
         fontSize: 16,
-        fontWeight: 'bold',
-        backgroundColor: '#f4f6fa',
-        borderRadius: 15
+        color: '#111827',
+    },
+    inputError: {
+        borderColor: '#DC2626',
+    },
+    passwordContainer: {
+        position: 'relative',
+    },
+    passwordInput: {
+        paddingRight: 50,
+    },
+    eyeIcon: {
+        position: 'absolute',
+        right: 16,
+        top: 14,
+        padding: 4,
+    },
+    eyeIconText: {
+        fontSize: 20,
+    },
+    dateInput: {
+        justifyContent: 'center',
+    },
+    dateText: {
+        fontSize: 16,
+        color: '#111827',
+    },
+    errorText: {
+        fontSize: 12,
+        color: '#DC2626',
+        marginTop: 6,
+    },
+    strengthText: {
+        fontSize: 12,
+        marginTop: 6,
+        fontWeight: '500',
+    },
+    radioGroup: {
+        flexDirection: 'row',
+        gap: 20,
     },
     radioContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
-        marginTop: 5,
     },
     outerCircle: {
         height: 24,
@@ -250,16 +508,69 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 10,
+        marginRight: 8,
     },
     innerCircle: {
         height: 12,
         width: 12,
         borderRadius: 6,
-        backgroundColor: '#0D9488',
+        backgroundColor: '#007AFF',
     },
     radioLabel: {
         fontSize: 16,
         color: '#374151',
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: '#D1D5DB',
+        backgroundColor: '#FFFFFF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    checkboxChecked: {
+        backgroundColor: '#E5E7EB',
+        borderColor: '#E5E7EB',
+    },
+    checkmark: {
+        color: '#000000',
+        fontSize: 12,
+        fontWeight: 'bold',
+    },
+    checkboxLabel: {
+        fontSize: 14,
+        color: '#374151',
+        flex: 1,
+    },
+    linkText: {
+        color: '#007AFF',
+    },
+    button: {
+        backgroundColor: '#007AFF',
+        borderRadius: 12,
+        paddingVertical: 16,
+        alignItems: 'center',
+        marginTop: 8,
+        marginBottom: 24,
+    },
+    buttonDisabled: {
+        opacity: 0.6,
+    },
+    buttonText: {
+        color: '#FFFFFF',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    orText: {
+        textAlign: 'center',
+        fontSize: 14,
+        color: '#9CA3AF',
     },
 })
