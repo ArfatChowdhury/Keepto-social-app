@@ -1,5 +1,7 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { createContext } from "react";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createContext, useContext } from "react";
+import { auth, db } from "../constants/firbase";
+import { doc, setDoc } from "firebase/firestore";
 
 
 const AuthContext = createContext();
@@ -21,7 +23,7 @@ export const AuthContextProvider = ({ children }) => {
             lastName: userData.lastName,
             phoneNumber: userData.phoneNumber,
             gender: userData.gender,
-            dob: userData.dob,
+            dob: userData.dateOfBirth,
             createdAt: new Date().toISOString(),
         })
         return userCredential
@@ -36,6 +38,4 @@ export const AuthContextProvider = ({ children }) => {
     )
 }
 
-export const useAuth = () => {
-    return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);

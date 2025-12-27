@@ -2,7 +2,7 @@ import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollVi
 import React, { useState } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { useAuth } from '../context/authContex'
-const Signup = () => {
+const Signup = ({ navigation }: { navigation: any }) => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
@@ -400,7 +400,13 @@ const Signup = () => {
                         </TouchableOpacity>
 
                         {/* Or Sign in with */}
-                        <Text style={styles.orText}>Or Sign in with</Text>
+                        <Text style={styles.orText}>Sign In</Text>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={() => navigation.navigate('SignIn')}
+                        >
+                            <Text style={styles.buttonText}>Sign In</Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

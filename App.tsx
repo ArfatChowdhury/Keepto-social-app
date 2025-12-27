@@ -1,15 +1,14 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Signup from './src/screens/Signup';
+import AppNavigator from './src/appNavigator/appNavigator';
 import { AuthContextProvider } from './src/context/authContex';
 
 export default function App() {
   return (
     <AuthContextProvider>
-      <View style={styles.container}>
-        <Signup />
-        <StatusBar style="auto" />
-      </View>
+      <AppNavigator />
+      <StatusBar style="auto" />
     </AuthContextProvider>
   );
 }
