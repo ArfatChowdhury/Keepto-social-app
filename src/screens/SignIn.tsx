@@ -45,8 +45,8 @@ const SignIn = ({ navigation }: { navigation: any }) => {
             if (isEmailValid && isPasswordValid) {
                 await signIn(email, password)
             }
-        } catch (error) {
-            console.log(error)
+        } catch (error: any) {
+            alert(error.message || 'Login failed')
         } finally {
             setLoading(false)
         }

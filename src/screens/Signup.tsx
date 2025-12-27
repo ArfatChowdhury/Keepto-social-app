@@ -1,7 +1,8 @@
-import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, SafeAreaView, KeyboardAvoidingView } from 'react-native'
-import React, { useState } from 'react'
+import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, SafeAreaView, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
+import React, { useState, useMemo } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { useAuth } from '../context/authContex'
+
 const Signup = ({ navigation }: { navigation: any }) => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
@@ -16,8 +17,6 @@ const Signup = ({ navigation }: { navigation: any }) => {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [termsAccepted, setTermsAccepted] = useState(false)
-    const [data, setData] = useState<any>(null)
-
 
     const { signUp } = useAuth()
     const [errors, setErrors] = useState({
@@ -33,34 +32,16 @@ const Signup = ({ navigation }: { navigation: any }) => {
     })
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const nameRegex = /^[a-zA-Z\s]*$/;
+    const numberRegex = /^[0-9]*$/;
 
     const onDateChange = (event: any, selectedDate?: Date) => {
         setShowPicker(Platform.OS === 'ios')
         if (selectedDate) {
             setDob(selectedDate)
-            setErrors(prev => ({ ...prev, dob: '' }))
+            validateField('dob', selectedDate)
         }
     }
-
-    const RadioButton = ({ label, value }: { label: string, value: string }) => {
-        return (
-            <TouchableOpacity
-                style={styles.radioContainer}
-                onPress={() => {
-                    setGender(value)
-                    setErrors(prev => ({ ...prev, gender: '' }))
-                }}
-            >
-                <View style={[styles.outerCircle, { borderColor: gender === value ? '#007AFF' : '#D1D5DB' }]}>
-                    {gender === value && <View style={styles.innerCircle} />}
-                </View>
-                <Text style={styles.radioLabel}>{label}</Text>
-            </TouchableOpacity>
-        )
-    }
-
-
-
 
     const calculateAge = (birthDate: Date) => {
         const today = new Date();
@@ -72,40 +53,42 @@ const Signup = ({ navigation }: { navigation: any }) => {
         return age;
     };
 
-
     const getStrength = (pw: string) => {
         if (pw.length === 0) return { label: '', color: 'transparent' };
-
         const hasLetters = /[a-zA-Z]/.test(pw);
         const hasNumbers = /[0-9]/.test(pw);
         const hasSymbols = /[^a-zA-Z0-9]/.test(pw);
 
-
         if (pw.length >= 10 && hasLetters && hasNumbers && hasSymbols) {
             return { label: 'Strong', color: '#059669' };
         }
-        // Rule: Medium (8+ chars, letters and numbers)
         if (pw.length >= 8 && hasLetters && hasNumbers) {
             return { label: 'Medium', color: '#D97706' };
         }
-        // Rule: Weak (6 to 7 characters)
         if (pw.length >= 6) {
             return { label: 'Weak', color: '#DC2626' };
         }
-
         return { label: 'Too Short', color: '#9CA3AF' };
     };
 
-    const strength = getStrength(password);
+    const strength = useMemo(() => getStrength(password), [password]);
 
     const validateField = (field: string, value: any) => {
         let error = ''
         switch (field) {
             case 'firstName':
-                if (!value.trim()) error = 'First Name is required *'
+                if (!value.trim()) {
+                    error = 'First Name is required *'
+                } else if (!nameRegex.test(value)) {
+                    error = 'First Name must contain letters only'
+                }
                 break
             case 'lastName':
-                if (!value.trim()) error = 'Last Name is required *'
+                if (!value.trim()) {
+                    error = 'Last Name is required *'
+                } else if (!nameRegex.test(value)) {
+                    error = 'Last Name must contain letters only'
+                }
                 break
             case 'email':
                 if (!value.trim()) {
@@ -129,15 +112,19 @@ const Signup = ({ navigation }: { navigation: any }) => {
                 }
                 break
             case 'number':
-                if (!value.trim()) error = 'Phone Number is required *'
+                if (!value.trim()) {
+                    error = 'Phone Number is required *'
+                } else if (!numberRegex.test(value)) {
+                    error = 'Phone Number must contain numbers only'
+                }
                 break
             case 'gender':
-                if (value === null) error = 'Please select gender'
+                if (!value) error = 'Please select gender *'
                 break
             case 'dob':
-                const userAge = calculateAge(dob)
-                if (userAge < 18) {
-                    error = 'You must be at least 18 years old to register'
+                const age = calculateAge(value)
+                if (age < 18) {
+                    error = 'Users must be at least 18 years old *'
                 }
                 break
             case 'terms':
@@ -148,59 +135,64 @@ const Signup = ({ navigation }: { navigation: any }) => {
         return error === ''
     }
 
+    const isFormValid = useMemo(() => {
+        return (
+            firstName.trim() !== '' &&
+            lastName.trim() !== '' &&
+            emailRegex.test(email) &&
+            password.length >= 6 &&
+            password === confirmPassword &&
+            numberRegex.test(number) &&
+            number.trim() !== '' &&
+            gender !== null &&
+            calculateAge(dob) >= 18 &&
+            termsAccepted &&
+            Object.values(errors).every(err => err === '')
+        );
+    }, [firstName, lastName, email, password, confirmPassword, number, gender, dob, termsAccepted, errors]);
+
     const handleSignup = async () => {
-        const userAge = calculateAge(dob)
-
-        const isValid =
-            validateField('firstName', firstName) &&
-            validateField('lastName', lastName) &&
-            validateField('email', email) &&
-            validateField('password', password) &&
-            validateField('confirmPassword', confirmPassword) &&
-            validateField('number', number) &&
-            validateField('gender', gender) &&
-            validateField('dob', userAge >= 18) &&
-            validateField('terms', termsAccepted)
-
-        if (isValid) {
-            // Proceed with signup
-            setLoading(true)
-
-            try {
-                const userData = { firstName, lastName, phoneNumber: number, gender, dateOfBirth: dob }
-                await signUp(email, password, userData)
-                alert('Signup successful')
-            } catch (error) {
-                alert(error)
-            } finally {
-                setLoading(false)
+        setLoading(true)
+        try {
+            const userData = {
+                firstName,
+                lastName,
+                phoneNumber: number,
+                gender,
+                dateOfBirth: dob
             }
-
-
-
-            setFirstName('')
-            setLastName('')
-            setEmail('')
-            setPassword('')
-            setConfirmPassword('')
-            setGender(null)
-            setDob(new Date())
-            setNumber('')
-
-
+            await signUp(email, password, userData)
+            alert('Signup successful')
+        } catch (error: any) {
+            alert(error.message || 'Signup failed')
+        } finally {
+            setLoading(false)
         }
     }
+
+    const RadioButton = ({ label, value }: { label: string, value: string }) => (
+        <TouchableOpacity
+            style={styles.radioContainer}
+            onPress={() => {
+                setGender(value)
+                validateField('gender', value)
+            }}
+        >
+            <View style={[styles.outerCircle, { borderColor: gender === value ? '#007AFF' : '#D1D5DB' }]}>
+                {gender === value && <View style={styles.innerCircle} />}
+            </View>
+            <Text style={styles.radioLabel}>{label}</Text>
+        </TouchableOpacity>
+    )
 
     return (
         <SafeAreaView style={styles.container}>
             <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'undefined'}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 style={styles.keyboardView}
-                keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
-                {/* Header */}
                 <View style={styles.header}>
-                    <TouchableOpacity style={styles.backButton}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                         <Text style={styles.backIcon}>←</Text>
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Keepto</Text>
@@ -213,20 +205,19 @@ const Signup = ({ navigation }: { navigation: any }) => {
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
-                    {/* Main Card */}
                     <View style={styles.card}>
-                        <Text style={styles.title}>Create an Account?</Text>
+                        <Text style={styles.title}>Create an Account</Text>
 
                         {/* First Name */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>First Name</Text>
+                            <Text style={styles.label}>First Name *</Text>
                             <TextInput
-                                placeholder='Johan orindo'
+                                placeholder='First Name'
                                 placeholderTextColor='#9CA3AF'
                                 value={firstName}
                                 onChangeText={(text) => {
                                     setFirstName(text)
-                                    if (errors.firstName) validateField('firstName', text)
+                                    validateField('firstName', text)
                                 }}
                                 style={[styles.input, errors.firstName ? styles.inputError : null]}
                             />
@@ -235,14 +226,14 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Last Name */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>Last Name</Text>
+                            <Text style={styles.label}>Last Name *</Text>
                             <TextInput
                                 placeholder='Last Name'
                                 placeholderTextColor='#9CA3AF'
                                 value={lastName}
                                 onChangeText={(text) => {
                                     setLastName(text)
-                                    if (errors.lastName) validateField('lastName', text)
+                                    validateField('lastName', text)
                                 }}
                                 style={[styles.input, errors.lastName ? styles.inputError : null]}
                             />
@@ -251,7 +242,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Date of Birth */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>Date of Birth</Text>
+                            <Text style={styles.label}>Date of Birth *</Text>
                             <TouchableOpacity
                                 style={[styles.input, styles.dateInput, errors.dob ? styles.inputError : null]}
                                 onPress={() => setShowPicker(true)}
@@ -272,7 +263,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Gender */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>Gender</Text>
+                            <Text style={styles.label}>Gender *</Text>
                             <View style={styles.radioGroup}>
                                 <RadioButton label='Male' value='Male' />
                                 <RadioButton label='Female' value='Female' />
@@ -282,7 +273,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Phone Number */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>Phone Number</Text>
+                            <Text style={styles.label}>Phone Number *</Text>
                             <TextInput
                                 placeholder='Phone Number'
                                 placeholderTextColor='#9CA3AF'
@@ -290,7 +281,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
                                 keyboardType='phone-pad'
                                 onChangeText={(text) => {
                                     setNumber(text)
-                                    if (errors.number) validateField('number', text)
+                                    validateField('number', text)
                                 }}
                                 style={[styles.input, errors.number ? styles.inputError : null]}
                             />
@@ -299,14 +290,14 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Email */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>Email</Text>
+                            <Text style={styles.label}>Email *</Text>
                             <TextInput
-                                placeholder='joedoo75@gmail.com'
+                                placeholder='email@example.com'
                                 placeholderTextColor='#9CA3AF'
                                 value={email}
                                 onChangeText={(text) => {
                                     setEmail(text)
-                                    if (errors.email) validateField('email', text)
+                                    validateField('email', text)
                                 }}
                                 keyboardType='email-address'
                                 autoCapitalize='none'
@@ -317,7 +308,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Password */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>Password</Text>
+                            <Text style={styles.label}>Password *</Text>
                             <View style={styles.passwordContainer}>
                                 <TextInput
                                     placeholder='Password'
@@ -326,7 +317,8 @@ const Signup = ({ navigation }: { navigation: any }) => {
                                     secureTextEntry={!showPassword}
                                     onChangeText={(text) => {
                                         setPassword(text)
-                                        if (errors.password) validateField('password', text)
+                                        validateField('password', text)
+                                        if (confirmPassword) validateField('confirmPassword', confirmPassword)
                                     }}
                                     style={[styles.input, styles.passwordInput, errors.password ? styles.inputError : null]}
                                 />
@@ -338,7 +330,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
                                 </TouchableOpacity>
                             </View>
                             {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
-                            {password.length > 0 && !errors.password && (
+                            {password.length > 0 && (
                                 <Text style={[styles.strengthText, { color: strength.color }]}>
                                     Password Strength: {strength.label}
                                 </Text>
@@ -347,7 +339,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Confirm Password */}
                         <View style={styles.fieldContainer}>
-                            <Text style={styles.label}>Confirm Password</Text>
+                            <Text style={styles.label}>Confirm Password *</Text>
                             <View style={styles.passwordContainer}>
                                 <TextInput
                                     placeholder='Confirm Password'
@@ -356,7 +348,7 @@ const Signup = ({ navigation }: { navigation: any }) => {
                                     secureTextEntry={!showConfirmPassword}
                                     onChangeText={(text) => {
                                         setConfirmPassword(text)
-                                        if (errors.confirmPassword) validateField('confirmPassword', text)
+                                        validateField('confirmPassword', text)
                                     }}
                                     style={[styles.input, styles.passwordInput, errors.confirmPassword ? styles.inputError : null]}
                                 />
@@ -376,15 +368,14 @@ const Signup = ({ navigation }: { navigation: any }) => {
                                 style={styles.checkboxContainer}
                                 onPress={() => {
                                     setTermsAccepted(!termsAccepted)
-                                    if (errors.terms) validateField('terms', !termsAccepted)
+                                    validateField('terms', !termsAccepted)
                                 }}
                             >
                                 <View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
                                     {termsAccepted && <Text style={styles.checkmark}>✓</Text>}
                                 </View>
                                 <Text style={styles.checkboxLabel}>
-                                    I agree to the{' '}
-                                    <Text style={styles.linkText}>Terms of Service</Text>
+                                    I agree to the <Text style={styles.linkText}>Terms of Service</Text>
                                 </Text>
                             </TouchableOpacity>
                             {errors.terms ? <Text style={styles.errorText}>{errors.terms}</Text> : null}
@@ -392,20 +383,29 @@ const Signup = ({ navigation }: { navigation: any }) => {
 
                         {/* Create Account Button */}
                         <TouchableOpacity
-                            style={[styles.button, loading && styles.buttonDisabled]}
+                            style={[
+                                styles.button,
+                                (!isFormValid || loading) && styles.buttonDisabled
+                            ]}
                             onPress={handleSignup}
-                            disabled={loading}
+                            disabled={!isFormValid || loading}
                         >
-                            <Text style={styles.buttonText}>Create account</Text>
+                            {loading ? (
+                                <View style={styles.loadingRow}>
+                                    <ActivityIndicator color="#fff" size="small" />
+                                    <Text style={styles.buttonText}> Creating account...</Text>
+                                </View>
+                            ) : (
+                                <Text style={styles.buttonText}>Create account</Text>
+                            )}
                         </TouchableOpacity>
 
-                        {/* Or Sign in with */}
-                        <Text style={styles.orText}>Sign In</Text>
+                        <Text style={styles.orText}>Already have an account?</Text>
                         <TouchableOpacity
-                            style={styles.button}
+                            style={[styles.button, styles.secondaryButton]}
                             onPress={() => navigation.navigate('SignIn')}
                         >
-                            <Text style={styles.buttonText}>Sign In</Text>
+                            <Text style={[styles.buttonText, styles.secondaryButtonText]}>Sign In</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -427,11 +427,9 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         paddingHorizontal: 16,
         paddingTop: Platform.OS === 'ios' ? 10 : 20,
         paddingBottom: 16,
-        backgroundColor: '#F3F4F6',
     },
     backButton: {
         width: 40,
@@ -466,24 +464,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
         padding: 24,
-        marginTop: 20,
+        marginTop: 10,
         shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 3,
     },
     title: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: 'bold',
-        color: '#000000',
-        marginBottom: 24,
+        color: '#000',
+        marginBottom: 20,
     },
     fieldContainer: {
-        marginBottom: 20,
+        marginBottom: 16,
     },
     label: {
         fontSize: 14,
@@ -497,7 +492,7 @@ const styles = StyleSheet.create({
         borderColor: '#E5E7EB',
         borderRadius: 12,
         paddingHorizontal: 16,
-        paddingVertical: 14,
+        paddingVertical: 12,
         fontSize: 16,
         color: '#111827',
     },
@@ -513,7 +508,7 @@ const styles = StyleSheet.create({
     eyeIcon: {
         position: 'absolute',
         right: 16,
-        top: 14,
+        top: 12,
         padding: 4,
     },
     eyeIconText: {
@@ -529,11 +524,11 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 12,
         color: '#DC2626',
-        marginTop: 6,
+        marginTop: 4,
     },
     strengthText: {
         fontSize: 12,
-        marginTop: 6,
+        marginTop: 4,
         fontWeight: '500',
     },
     radioGroup: {
@@ -545,18 +540,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     outerCircle: {
-        height: 24,
-        width: 24,
-        borderRadius: 12,
+        height: 22,
+        width: 22,
+        borderRadius: 11,
         borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 8,
     },
     innerCircle: {
-        height: 12,
-        width: 12,
-        borderRadius: 6,
+        height: 10,
+        width: 10,
+        borderRadius: 5,
         backgroundColor: '#007AFF',
     },
     radioLabel: {
@@ -573,17 +568,16 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderWidth: 2,
         borderColor: '#D1D5DB',
-        backgroundColor: '#FFFFFF',
+        marginRight: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 10,
     },
     checkboxChecked: {
-        backgroundColor: '#E5E7EB',
-        borderColor: '#E5E7EB',
+        backgroundColor: '#007AFF',
+        borderColor: '#007AFF',
     },
     checkmark: {
-        color: '#000000',
+        color: '#FFF',
         fontSize: 12,
         fontWeight: 'bold',
     },
@@ -598,22 +592,35 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#007AFF',
         borderRadius: 12,
-        paddingVertical: 16,
+        paddingVertical: 14,
         alignItems: 'center',
-        marginTop: 8,
-        marginBottom: 24,
+        marginTop: 10,
     },
     buttonDisabled: {
-        opacity: 0.6,
+        backgroundColor: '#9CA3AF',
     },
     buttonText: {
         color: '#FFFFFF',
         fontSize: 16,
-        fontWeight: '600',
+        fontWeight: 'bold',
+    },
+    loadingRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     orText: {
         textAlign: 'center',
         fontSize: 14,
         color: '#9CA3AF',
+        marginTop: 20,
+        marginBottom: 10,
+    },
+    secondaryButton: {
+        backgroundColor: 'transparent',
+        borderWidth: 1,
+        borderColor: '#007AFF',
+    },
+    secondaryButtonText: {
+        color: '#007AFF',
     },
 })
