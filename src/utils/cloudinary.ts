@@ -1,6 +1,6 @@
 export const uploadToCloudinary = async (imageUri: string) => {
     // Hardcoded credentials as requested by user
-    const cloudName = 'keepto'; // Assuming cloud name is same as project/preset
+    const cloudName = 'dx4sotqea';
     const uploadPreset = 'keepto';
 
     const data = new FormData();

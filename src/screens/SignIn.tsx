@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { useAuth } from "../context/authContex";
+import { useAuth } from "../context/authContext";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/navigation";
+
+type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const SignIn = ({ navigation }: { navigation: any }) => {
+const SignIn = ({ navigation }: Props) => {
     const [loading, setLoading] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

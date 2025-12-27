@@ -1,9 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
 import { useTheme } from '../context/themeContext';
-import { useAuth } from '../context/authContex';
+import { useAuth } from '../context/authContext';
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/navigation";
 
-export default function Settings({ navigation }: { navigation: any }) {
+type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
+
+export default function Settings({ navigation }: Props) {
     const { isDarkMode, colors, toggleTheme } = useTheme();
     const { signOut } = useAuth();
 
@@ -118,4 +122,3 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
 });
-import { Platform } from 'react-native';

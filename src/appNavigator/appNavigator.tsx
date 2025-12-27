@@ -6,10 +6,12 @@ import Signup from "../screens/Signup";
 import SignIn from '../screens/SignIn';
 import Profile from '../screens/Profile';
 import Settings from '../screens/Settings';
-import { useAuth } from '../context/authContex';
+import EditProfile from '../screens/EditProfile';
+import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/themeContext';
+import { RootStackParamList } from '../types/navigation';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
     const { user, loading } = useAuth();
@@ -30,6 +32,7 @@ export default function AppNavigator() {
                     // Main Stack
                     <>
                         <Stack.Screen name="Profile" component={Profile} />
+                        <Stack.Screen name="EditProfile" component={EditProfile} />
                         <Stack.Screen name="Settings" component={Settings} />
                     </>
                 ) : (

@@ -1,9 +1,13 @@
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, SafeAreaView, KeyboardAvoidingView, ActivityIndicator } from 'react-native'
 import React, { useState, useMemo } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { useAuth } from '../context/authContex'
+import { useAuth } from '../context/authContext'
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/navigation";
 
-const Signup = ({ navigation }: { navigation: any }) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Signup'>;
+
+const Signup = ({ navigation }: Props) => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
@@ -414,8 +418,6 @@ const Signup = ({ navigation }: { navigation: any }) => {
     )
 }
 
-export default Signup
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -624,3 +626,5 @@ const styles = StyleSheet.create({
         color: '#007AFF',
     },
 })
+
+export default Signup;
