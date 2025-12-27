@@ -1,7 +1,7 @@
 import { Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView, SafeAreaView, KeyboardAvoidingView } from 'react-native'
 import React, { useState } from 'react'
 import DateTimePicker from '@react-native-community/datetimepicker'
-
+import { useAuth } from '../context/authContex'
 const Signup = () => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
@@ -19,6 +19,7 @@ const Signup = () => {
     const [data, setData] = useState<any>(null)
 
 
+    const { signUp } = useAuth()
     const [errors, setErrors] = useState({
         firstName: '',
         lastName: '',
@@ -147,7 +148,7 @@ const Signup = () => {
         return error === ''
     }
 
-    const handleSignup = () => {
+    const handleSignup = async () => {
         const userAge = calculateAge(dob)
 
         const isValid =
@@ -164,21 +165,19 @@ const Signup = () => {
         if (isValid) {
             // Proceed with signup
             setLoading(true)
-            
-            // Store form data in data state
-            const formData = {
-                firstName,
-                lastName,
-                email,
-                password,
-                phoneNumber: number,
-                gender,
-                dateOfBirth: dob,
-                termsAccepted,
-                createdAt: new Date().toISOString()
+
+            try {
+                const userData = { firstName, lastName, phoneNumber: number, gender, dateOfBirth: dob }
+                await signUp(email, password, userData)
+                alert('Signup successful')
+            } catch (error) {
+                alert(error)
+            } finally {
+                setLoading(false)
             }
-            
-            setData(formData)
+
+
+
             setFirstName('')
             setLastName('')
             setEmail('')
@@ -187,8 +186,7 @@ const Signup = () => {
             setGender(null)
             setDob(new Date())
             setNumber('')
-            console.log('Signup successful', formData)
-            // You can now send this data to your database
+
 
         }
     }
@@ -215,195 +213,195 @@ const Signup = () => {
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                 >
-                {/* Main Card */}
-                <View style={styles.card}>
-                    <Text style={styles.title}>Create an Account?</Text>
+                    {/* Main Card */}
+                    <View style={styles.card}>
+                        <Text style={styles.title}>Create an Account?</Text>
 
-                    {/* First Name */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>First Name</Text>
-                        <TextInput
-                            placeholder='Johan orindo'
-                            placeholderTextColor='#9CA3AF'
-                            value={firstName}
-                            onChangeText={(text) => {
-                                setFirstName(text)
-                                if (errors.firstName) validateField('firstName', text)
-                            }}
-                            style={[styles.input, errors.firstName ? styles.inputError : null]}
-                        />
-                        {errors.firstName ? <Text style={styles.errorText}>{errors.firstName}</Text> : null}
-                    </View>
-
-                    {/* Last Name */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Last Name</Text>
-                        <TextInput
-                            placeholder='Last Name'
-                            placeholderTextColor='#9CA3AF'
-                            value={lastName}
-                            onChangeText={(text) => {
-                                setLastName(text)
-                                if (errors.lastName) validateField('lastName', text)
-                            }}
-                            style={[styles.input, errors.lastName ? styles.inputError : null]}
-                        />
-                        {errors.lastName ? <Text style={styles.errorText}>{errors.lastName}</Text> : null}
-                    </View>
-
-                    {/* Date of Birth */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Date of Birth</Text>
-                        <TouchableOpacity
-                            style={[styles.input, styles.dateInput, errors.dob ? styles.inputError : null]}
-                            onPress={() => setShowPicker(true)}
-                        >
-                            <Text style={styles.dateText}>{dob.toDateString()}</Text>
-                        </TouchableOpacity>
-                        {showPicker && (
-                            <DateTimePicker
-                                value={dob}
-                                mode="date"
-                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                                maximumDate={new Date()}
-                                onChange={onDateChange}
-                            />
-                        )}
-                        {errors.dob ? <Text style={styles.errorText}>{errors.dob}</Text> : null}
-                    </View>
-
-                    {/* Gender */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Gender</Text>
-                        <View style={styles.radioGroup}>
-                            <RadioButton label='Male' value='Male' />
-                            <RadioButton label='Female' value='Female' />
-                        </View>
-                        {errors.gender ? <Text style={styles.errorText}>{errors.gender}</Text> : null}
-                    </View>
-
-                    {/* Phone Number */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Phone Number</Text>
-                        <TextInput
-                            placeholder='Phone Number'
-                            placeholderTextColor='#9CA3AF'
-                            value={number}
-                            keyboardType='phone-pad'
-                            onChangeText={(text) => {
-                                setNumber(text)
-                                if (errors.number) validateField('number', text)
-                            }}
-                            style={[styles.input, errors.number ? styles.inputError : null]}
-                        />
-                        {errors.number ? <Text style={styles.errorText}>{errors.number}</Text> : null}
-                    </View>
-
-                    {/* Email */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Email</Text>
-                        <TextInput
-                            placeholder='joedoo75@gmail.com'
-                            placeholderTextColor='#9CA3AF'
-                            value={email}
-                            onChangeText={(text) => {
-                                setEmail(text)
-                                if (errors.email) validateField('email', text)
-                            }}
-                            keyboardType='email-address'
-                            autoCapitalize='none'
-                            style={[styles.input, errors.email ? styles.inputError : null]}
-                        />
-                        {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
-                    </View>
-
-                    {/* Password */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Password</Text>
-                        <View style={styles.passwordContainer}>
+                        {/* First Name */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>First Name</Text>
                             <TextInput
-                                placeholder='Password'
+                                placeholder='Johan orindo'
                                 placeholderTextColor='#9CA3AF'
-                                value={password}
-                                secureTextEntry={!showPassword}
+                                value={firstName}
                                 onChangeText={(text) => {
-                                    setPassword(text)
-                                    if (errors.password) validateField('password', text)
+                                    setFirstName(text)
+                                    if (errors.firstName) validateField('firstName', text)
                                 }}
-                                style={[styles.input, styles.passwordInput, errors.password ? styles.inputError : null]}
+                                style={[styles.input, errors.firstName ? styles.inputError : null]}
                             />
-                            <TouchableOpacity
-                                style={styles.eyeIcon}
-                                onPress={() => setShowPassword(!showPassword)}
-                            >
-                                <Text style={styles.eyeIconText}>{showPassword ? '👁' : '👁‍🗨'}</Text>
-                            </TouchableOpacity>
+                            {errors.firstName ? <Text style={styles.errorText}>{errors.firstName}</Text> : null}
                         </View>
-                        {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
-                        {password.length > 0 && !errors.password && (
-                            <Text style={[styles.strengthText, { color: strength.color }]}>
-                                Password Strength: {strength.label}
-                            </Text>
-                        )}
-                    </View>
 
-                    {/* Confirm Password */}
-                    <View style={styles.fieldContainer}>
-                        <Text style={styles.label}>Confirm Password</Text>
-                        <View style={styles.passwordContainer}>
+                        {/* Last Name */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>Last Name</Text>
                             <TextInput
-                                placeholder='Confirm Password'
+                                placeholder='Last Name'
                                 placeholderTextColor='#9CA3AF'
-                                value={confirmPassword}
-                                secureTextEntry={!showConfirmPassword}
+                                value={lastName}
                                 onChangeText={(text) => {
-                                    setConfirmPassword(text)
-                                    if (errors.confirmPassword) validateField('confirmPassword', text)
+                                    setLastName(text)
+                                    if (errors.lastName) validateField('lastName', text)
                                 }}
-                                style={[styles.input, styles.passwordInput, errors.confirmPassword ? styles.inputError : null]}
+                                style={[styles.input, errors.lastName ? styles.inputError : null]}
                             />
-                            <TouchableOpacity
-                                style={styles.eyeIcon}
-                                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                            >
-                                <Text style={styles.eyeIconText}>{showConfirmPassword ? '👁' : '👁‍🗨'}</Text>
-                            </TouchableOpacity>
+                            {errors.lastName ? <Text style={styles.errorText}>{errors.lastName}</Text> : null}
                         </View>
-                        {errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
-                    </View>
 
-                    {/* Terms of Service */}
-                    <View style={styles.fieldContainer}>
-                        <TouchableOpacity
-                            style={styles.checkboxContainer}
-                            onPress={() => {
-                                setTermsAccepted(!termsAccepted)
-                                if (errors.terms) validateField('terms', !termsAccepted)
-                            }}
-                        >
-                            <View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
-                                {termsAccepted && <Text style={styles.checkmark}>✓</Text>}
+                        {/* Date of Birth */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>Date of Birth</Text>
+                            <TouchableOpacity
+                                style={[styles.input, styles.dateInput, errors.dob ? styles.inputError : null]}
+                                onPress={() => setShowPicker(true)}
+                            >
+                                <Text style={styles.dateText}>{dob.toDateString()}</Text>
+                            </TouchableOpacity>
+                            {showPicker && (
+                                <DateTimePicker
+                                    value={dob}
+                                    mode="date"
+                                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                    maximumDate={new Date()}
+                                    onChange={onDateChange}
+                                />
+                            )}
+                            {errors.dob ? <Text style={styles.errorText}>{errors.dob}</Text> : null}
+                        </View>
+
+                        {/* Gender */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>Gender</Text>
+                            <View style={styles.radioGroup}>
+                                <RadioButton label='Male' value='Male' />
+                                <RadioButton label='Female' value='Female' />
                             </View>
-                            <Text style={styles.checkboxLabel}>
-                                I agree to the{' '}
-                                <Text style={styles.linkText}>Terms of Service</Text>
-                            </Text>
+                            {errors.gender ? <Text style={styles.errorText}>{errors.gender}</Text> : null}
+                        </View>
+
+                        {/* Phone Number */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>Phone Number</Text>
+                            <TextInput
+                                placeholder='Phone Number'
+                                placeholderTextColor='#9CA3AF'
+                                value={number}
+                                keyboardType='phone-pad'
+                                onChangeText={(text) => {
+                                    setNumber(text)
+                                    if (errors.number) validateField('number', text)
+                                }}
+                                style={[styles.input, errors.number ? styles.inputError : null]}
+                            />
+                            {errors.number ? <Text style={styles.errorText}>{errors.number}</Text> : null}
+                        </View>
+
+                        {/* Email */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>Email</Text>
+                            <TextInput
+                                placeholder='joedoo75@gmail.com'
+                                placeholderTextColor='#9CA3AF'
+                                value={email}
+                                onChangeText={(text) => {
+                                    setEmail(text)
+                                    if (errors.email) validateField('email', text)
+                                }}
+                                keyboardType='email-address'
+                                autoCapitalize='none'
+                                style={[styles.input, errors.email ? styles.inputError : null]}
+                            />
+                            {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+                        </View>
+
+                        {/* Password */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>Password</Text>
+                            <View style={styles.passwordContainer}>
+                                <TextInput
+                                    placeholder='Password'
+                                    placeholderTextColor='#9CA3AF'
+                                    value={password}
+                                    secureTextEntry={!showPassword}
+                                    onChangeText={(text) => {
+                                        setPassword(text)
+                                        if (errors.password) validateField('password', text)
+                                    }}
+                                    style={[styles.input, styles.passwordInput, errors.password ? styles.inputError : null]}
+                                />
+                                <TouchableOpacity
+                                    style={styles.eyeIcon}
+                                    onPress={() => setShowPassword(!showPassword)}
+                                >
+                                    <Text style={styles.eyeIconText}>{showPassword ? '👁' : '👁‍🗨'}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+                            {password.length > 0 && !errors.password && (
+                                <Text style={[styles.strengthText, { color: strength.color }]}>
+                                    Password Strength: {strength.label}
+                                </Text>
+                            )}
+                        </View>
+
+                        {/* Confirm Password */}
+                        <View style={styles.fieldContainer}>
+                            <Text style={styles.label}>Confirm Password</Text>
+                            <View style={styles.passwordContainer}>
+                                <TextInput
+                                    placeholder='Confirm Password'
+                                    placeholderTextColor='#9CA3AF'
+                                    value={confirmPassword}
+                                    secureTextEntry={!showConfirmPassword}
+                                    onChangeText={(text) => {
+                                        setConfirmPassword(text)
+                                        if (errors.confirmPassword) validateField('confirmPassword', text)
+                                    }}
+                                    style={[styles.input, styles.passwordInput, errors.confirmPassword ? styles.inputError : null]}
+                                />
+                                <TouchableOpacity
+                                    style={styles.eyeIcon}
+                                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                                >
+                                    <Text style={styles.eyeIconText}>{showConfirmPassword ? '👁' : '👁‍🗨'}</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
+                        </View>
+
+                        {/* Terms of Service */}
+                        <View style={styles.fieldContainer}>
+                            <TouchableOpacity
+                                style={styles.checkboxContainer}
+                                onPress={() => {
+                                    setTermsAccepted(!termsAccepted)
+                                    if (errors.terms) validateField('terms', !termsAccepted)
+                                }}
+                            >
+                                <View style={[styles.checkbox, termsAccepted && styles.checkboxChecked]}>
+                                    {termsAccepted && <Text style={styles.checkmark}>✓</Text>}
+                                </View>
+                                <Text style={styles.checkboxLabel}>
+                                    I agree to the{' '}
+                                    <Text style={styles.linkText}>Terms of Service</Text>
+                                </Text>
+                            </TouchableOpacity>
+                            {errors.terms ? <Text style={styles.errorText}>{errors.terms}</Text> : null}
+                        </View>
+
+                        {/* Create Account Button */}
+                        <TouchableOpacity
+                            style={[styles.button, loading && styles.buttonDisabled]}
+                            onPress={handleSignup}
+                            disabled={loading}
+                        >
+                            <Text style={styles.buttonText}>Create account</Text>
                         </TouchableOpacity>
-                        {errors.terms ? <Text style={styles.errorText}>{errors.terms}</Text> : null}
+
+                        {/* Or Sign in with */}
+                        <Text style={styles.orText}>Or Sign in with</Text>
                     </View>
-
-                    {/* Create Account Button */}
-                    <TouchableOpacity
-                        style={[styles.button, loading && styles.buttonDisabled]}
-                        onPress={handleSignup}
-                        disabled={loading}
-                    >
-                        <Text style={styles.buttonText}>Create account</Text>
-                    </TouchableOpacity>
-
-                    {/* Or Sign in with */}
-                    <Text style={styles.orText}>Or Sign in with</Text>
-                </View>
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
