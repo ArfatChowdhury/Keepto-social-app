@@ -10,10 +10,16 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/themeContext';
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { TabParamList } from '../types/tabParamList';
+import { CompositeScreenProps } from '@react-navigation/native';
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ProfileScreen'>;
+type Props = CompositeScreenProps<
+    BottomTabScreenProps<TabParamList, 'Profile'>,
+    NativeStackScreenProps<RootStackParamList>
+>;
 
 export default function ProfileScreen({ navigation }: Props) {
     const { user, userData } = useAuth();
@@ -40,7 +46,7 @@ export default function ProfileScreen({ navigation }: Props) {
                 <View style={[styles.header, { backgroundColor: colors.card }]}>
                     <TouchableOpacity
                         style={styles.settingsIcon}
-                        onPress={() => navigation.navigate('SettingsScreen')}
+                        onPress={() => navigation.getParent()?.navigate('SettingsScreen')}
                     >
                         <Text style={styles.settingsIconText}>⚙️</Text>
                     </TouchableOpacity>

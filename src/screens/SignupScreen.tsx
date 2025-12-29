@@ -166,7 +166,7 @@ const SignupScreen = ({ navigation }: Props) => {
                 dateOfBirth: dob
             }
             await signUp(email, password, userData)
-            navigation.navigate('FeedScreenScreen')
+            navigation.navigate('MainTabs')
 
         } catch (error: any) {
             alert(error.message || 'Signup failed')

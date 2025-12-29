@@ -2,10 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
 import { useTheme } from '../context/themeContext';
 import { useAuth } from '../context/authContext';
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { TabParamList } from '../types/tabParamList';
+import { CompositeScreenProps } from '@react-navigation/native';
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SettingsScreen'>;
+type Props = CompositeScreenProps<
+    BottomTabScreenProps<TabParamList, 'Settings'>,
+    NativeStackScreenProps<RootStackParamList>
+>;
 
 export default function SettingsScreen({ navigation }: Props) {
     const { isDarkMode, colors, toggleTheme } = useTheme();
@@ -46,7 +52,7 @@ export default function SettingsScreen({ navigation }: Props) {
             <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <TouchableOpacity
                     style={styles.row}
-                    onPress={() => navigation.navigate('ProfileScreen')}
+                    onPress={() => navigation.navigate('Profile')}
                 >
                     <Text style={[styles.rowText, { color: colors.text }]}>Edit Profile</Text>
                     <Text style={{ color: colors.subText }}>›</Text>
