@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     Image,
     ScrollView,
-    SafeAreaView,
 } from 'react-native';
 import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/themeContext';
@@ -42,6 +41,7 @@ export default function ProfileScreen({ navigation }: Props) {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={[styles.header, { backgroundColor: colors.card }]}>
                     <TouchableOpacity
@@ -92,8 +92,13 @@ export default function ProfileScreen({ navigation }: Props) {
     );
 }
 
+// Add Navbar to imports
+import Navbar from '../components/Navbar';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 const styles = StyleSheet.create({
     container: {
+        // marginTop: '10%',
         flex: 1,
     },
     scrollContent: {
