@@ -2,14 +2,16 @@ import React from 'react';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { ActivityIndicator, View } from 'react-native';
-import SignupScreen from "../screens/SignupScreen";
-import SignInScreen from '../screens/SignInScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-import EditProfileScreen from '../screens/EditProfileScreen';
+
 import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/themeContext';
 import { RootStackParamList } from '../types/navigation';
+import ProfileScreen from '../screens/ProfileScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import SignInScreen from '../screens/SignInScreen';
+import SignupScreen from '../screens/SignupScreen';
+import FeedScreenScreen from '../screens/FeedScreenScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -31,6 +33,7 @@ export default function AppNavigator() {
                 {user ? (
                     // Main Stack
                     <>
+                        <Stack.Screen name="FeedScreenScreen" component={FeedScreenScreen} />
                         <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
                         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
                         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />

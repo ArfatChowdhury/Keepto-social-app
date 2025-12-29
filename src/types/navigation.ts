@@ -4,4 +4,5 @@ export type RootStackParamList = {
     ProfileScreen: undefined;
     SettingsScreen: undefined;
     EditProfileScreen: undefined;
+    FeedScreenScreen: undefined;
 };
