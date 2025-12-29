@@ -1,7 +1,7 @@
 export type RootStackParamList = {
-    SignIn: undefined;
-    Signup: undefined;
-    Profile: undefined;
-    Settings: undefined;
-    EditProfile: undefined;
+    SignInScreen: undefined;
+    SignupScreen: undefined;
+    ProfileScreen: undefined;
+    SettingsScreen: undefined;
+    EditProfileScreen: undefined;
 };

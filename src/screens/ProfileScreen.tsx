@@ -13,9 +13,9 @@ import { useTheme } from '../context/themeContext';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'ProfileScreen'>;
 
-export default function Profile({ navigation }: Props) {
+export default function ProfileScreen({ navigation }: Props) {
     const { user, userData } = useAuth();
     const { colors } = useTheme();
 
@@ -40,7 +40,7 @@ export default function Profile({ navigation }: Props) {
                 <View style={[styles.header, { backgroundColor: colors.card }]}>
                     <TouchableOpacity
                         style={styles.settingsIcon}
-                        onPress={() => navigation.navigate('Settings')}
+                        onPress={() => navigation.navigate('SettingsScreen')}
                     >
                         <Text style={styles.settingsIconText}>⚙️</Text>
                     </TouchableOpacity>
@@ -59,7 +59,7 @@ export default function Profile({ navigation }: Props) {
 
                     <TouchableOpacity
                         style={[styles.editButton, { backgroundColor: colors.primary }]}
-                        onPress={() => navigation.navigate('EditProfile')}
+                        onPress={() => navigation.navigate('EditProfileScreen')}
                     >
                         <Text style={styles.editButtonText}>Edit Profile</Text>
                     </TouchableOpacity>

@@ -5,9 +5,9 @@ import { useAuth } from '../context/authContext';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'SettingsScreen'>;
 
-export default function Settings({ navigation }: Props) {
+export default function SettingsScreen({ navigation }: Props) {
     const { isDarkMode, colors, toggleTheme } = useTheme();
     const { signOut } = useAuth();
 
@@ -46,7 +46,7 @@ export default function Settings({ navigation }: Props) {
             <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <TouchableOpacity
                     style={styles.row}
-                    onPress={() => navigation.navigate('Profile')}
+                    onPress={() => navigation.navigate('ProfileScreen')}
                 >
                     <Text style={[styles.rowText, { color: colors.text }]}>Edit Profile</Text>
                     <Text style={{ color: colors.subText }}>›</Text>

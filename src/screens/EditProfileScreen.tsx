@@ -20,9 +20,9 @@ import { uploadToCloudinary } from '../utils/cloudinary';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'EditProfile'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'EditProfileScreen'>;
 
-export default function EditProfile({ navigation }: Props) {
+export default function EditProfileScreen({ navigation }: Props) {
     const { user, userData, updateProfileInfo } = useAuth();
     const { colors } = useTheme();
 

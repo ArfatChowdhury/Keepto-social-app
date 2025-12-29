@@ -4,11 +4,11 @@ import { useAuth } from "../context/authContext";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SignIn'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'SignInScreen'>;
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const SignIn = ({ navigation }: Props) => {
+const SignInScreen = ({ navigation }: Props) => {
     const [loading, setLoading] = useState(false)
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -99,7 +99,7 @@ const SignIn = ({ navigation }: Props) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('Signup')}
+                        onPress={() => navigation.navigate('SignupScreen')}
                         style={styles.linkButton}
                     >
                         <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
@@ -172,4 +172,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default SignIn;
+export default SignInScreen;

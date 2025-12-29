@@ -5,9 +5,9 @@ import { useAuth } from '../context/authContext'
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Signup'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'SignupScreen'>;
 
-const Signup = ({ navigation }: Props) => {
+const SignupScreen = ({ navigation }: Props) => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
@@ -407,7 +407,7 @@ const Signup = ({ navigation }: Props) => {
                         <Text style={styles.orText}>Already have an account?</Text>
                         <TouchableOpacity
                             style={[styles.button, styles.secondaryButton]}
-                            onPress={() => navigation.navigate('SignIn')}
+                            onPress={() => navigation.navigate('SignInScreen')}
                         >
                             <Text style={[styles.buttonText, styles.secondaryButtonText]}>Sign In</Text>
                         </TouchableOpacity>
@@ -627,4 +627,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default Signup;
+export default SignupScreen;
