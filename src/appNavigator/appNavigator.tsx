@@ -12,12 +12,12 @@ import SettingsScreen from '../screens/SettingsScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignupScreen from '../screens/SignupScreen';
 import FeedScreenScreen from '../screens/FeedScreenScreen';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { TabParamList } from '../types/tabParamList';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<TabParamList>();
+const Tab = createMaterialTopTabNavigator<TabParamList>();
 
 const TabNavigator = () => {
     const { colors } = useTheme();
@@ -25,7 +25,6 @@ const TabNavigator = () => {
     return (
         <Tab.Navigator
             screenOptions={{
-                headerShown: false,
                 tabBarActiveTintColor: colors.primary,
                 tabBarInactiveTintColor: colors.subText,
                 tabBarStyle: {
@@ -39,8 +38,8 @@ const TabNavigator = () => {
                 component={FeedScreenScreen}
                 options={{
                     tabBarLabel: 'Feed',
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ color, fontSize: size }}>🏠</Text>
+                    tabBarIcon: ({ color }) => (
+                        <Text style={{ color, fontSize: 20 }}>🏠</Text>
                     ),
                 }}
             />
@@ -49,8 +48,8 @@ const TabNavigator = () => {
                 component={ProfileScreen}
                 options={{
                     tabBarLabel: 'Profile',
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ color, fontSize: size }}>👤</Text>
+                    tabBarIcon: ({ color }) => (
+                        <Text style={{ color, fontSize: 20 }}>👤</Text>
                     ),
                 }}
             />
@@ -59,12 +58,12 @@ const TabNavigator = () => {
                 component={SettingsScreen}
                 options={{
                     tabBarLabel: 'Settings',
-                    tabBarIcon: ({ color, size }) => (
-                        <Text style={{ color, fontSize: size }}>⚙️</Text>
+                    tabBarIcon: ({ color }) => (
+                        <Text style={{ color, fontSize: 20 }}>⚙️</Text>
                     ),
                 }}
             />
-        </Tab.Navigator>
+        </Tab.Navigator >
     );
 };
 
