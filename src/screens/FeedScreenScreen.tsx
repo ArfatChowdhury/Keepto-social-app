@@ -4,7 +4,6 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { TabParamList } from '../types/tabParamList';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import Navbar from "../components/Navbar";
 import { useTheme } from "../context/themeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -17,12 +16,11 @@ export default function FeedScreenScreen({ navigation }: Props) {
     const { colors } = useTheme();
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-            <Navbar />
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.content}>
                 <Text style={{ color: colors.text }}>FeedScreen</Text>
             </View>
-        </SafeAreaView>
+        </View>
     );
 }
 

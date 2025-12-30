@@ -1,3 +1,5 @@
+import { TabParamList } from "./tabParamList";
+
 export type RootStackParamList = {
     SignInScreen: undefined;
     SignupScreen: undefined;
@@ -5,5 +7,5 @@ export type RootStackParamList = {
     SettingsScreen: undefined;
     EditProfileScreen: undefined;
     FeedScreenScreen: undefined;
-    MainTabs: undefined;
+    MainTabs: { screen?: keyof TabParamList };
 };

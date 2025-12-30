@@ -9,7 +9,6 @@ import {
     ScrollView,
     ActivityIndicator,
     Alert,
-    SafeAreaView,
     Platform,
     KeyboardAvoidingView
 } from 'react-native';
@@ -19,6 +18,7 @@ import { useTheme } from '../context/themeContext';
 import { uploadToCloudinary } from '../utils/cloudinary';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EditProfileScreen'>;
 

@@ -1,17 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Platform } from 'react-native';
 import { useTheme } from '../context/themeContext';
 import { useAuth } from '../context/authContext';
 import { RootStackParamList } from "../types/navigation";
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { TabParamList } from '../types/tabParamList';
-import { CompositeScreenProps } from '@react-navigation/native';
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-type Props = CompositeScreenProps<
-    BottomTabScreenProps<TabParamList, 'Settings'>,
-    NativeStackScreenProps<RootStackParamList>
->;
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'SettingsScreen'>;
 
 export default function SettingsScreen({ navigation }: Props) {
     const { isDarkMode, colors, toggleTheme } = useTheme();
@@ -52,7 +48,7 @@ export default function SettingsScreen({ navigation }: Props) {
             <View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <TouchableOpacity
                     style={styles.row}
-                    onPress={() => navigation.navigate('Profile')}
+                    onPress={() => navigation.navigate('MainTabs', { screen: 'Profile' })}
                 >
                     <Text style={[styles.rowText, { color: colors.text }]}>Edit Profile</Text>
                     <Text style={{ color: colors.subText }}>›</Text>

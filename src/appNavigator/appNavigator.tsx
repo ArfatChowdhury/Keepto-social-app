@@ -12,8 +12,10 @@ import SettingsScreen from '../screens/SettingsScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignupScreen from '../screens/SignupScreen';
 import FeedScreenScreen from '../screens/FeedScreenScreen';
+import ChatScreen from '../screens/ChatScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { TabParamList } from '../types/tabParamList';
+import MainHeader from '../components/MainHeader';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -23,47 +25,51 @@ const TabNavigator = () => {
     const { colors } = useTheme();
 
     return (
-        <Tab.Navigator
-            screenOptions={{
-                tabBarActiveTintColor: colors.primary,
-                tabBarInactiveTintColor: colors.subText,
-                tabBarStyle: {
-                    backgroundColor: colors.card,
-                    borderTopColor: colors.border,
-                },
-            }}
-        >
-            <Tab.Screen
-                name="Feed"
-                component={FeedScreenScreen}
-                options={{
-                    tabBarLabel: 'Feed',
-                    tabBarIcon: ({ color }) => (
-                        <Text style={{ color, fontSize: 20 }}>🏠</Text>
-                    ),
+        <View style={{ flex: 1 }}>
+            <MainHeader />
+            <Tab.Navigator
+                screenOptions={{
+                    tabBarShowIcon: true,
+                    tabBarActiveTintColor: colors.primary,
+                    tabBarInactiveTintColor: colors.subText,
+                    tabBarStyle: {
+                        backgroundColor: colors.card,
+                        borderTopColor: colors.border,
+                    },
                 }}
-            />
-            <Tab.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={{
-                    tabBarLabel: 'Profile',
-                    tabBarIcon: ({ color }) => (
-                        <Text style={{ color, fontSize: 20 }}>👤</Text>
-                    ),
-                }}
-            />
-            <Tab.Screen
-                name="Settings"
-                component={SettingsScreen}
-                options={{
-                    tabBarLabel: 'Settings',
-                    tabBarIcon: ({ color }) => (
-                        <Text style={{ color, fontSize: 20 }}>⚙️</Text>
-                    ),
-                }}
-            />
-        </Tab.Navigator >
+            >
+                <Tab.Screen
+                    name="Feed"
+                    component={FeedScreenScreen}
+                    options={{
+                        tabBarLabel: 'Feed',
+                        tabBarIcon: ({ color }) => (
+                            <Text style={{ color, fontSize: 20 }}>🏠</Text>
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Chat"
+                    component={ChatScreen}
+                    options={{
+                        tabBarLabel: 'Chat',
+                        tabBarIcon: ({ color }) => (
+                            <Text style={{ color, fontSize: 20 }}>💬</Text>
+                        ),
+                    }}
+                />
+                <Tab.Screen
+                    name="Profile"
+                    component={ProfileScreen}
+                    options={{
+                        tabBarLabel: 'Profile',
+                        tabBarIcon: ({ color }) => (
+                            <Text style={{ color, fontSize: 20 }}>👤</Text>
+                        ),
+                    }}
+                />
+            </Tab.Navigator>
+        </View>
     );
 };
 
@@ -83,10 +89,10 @@ export default function AppNavigator() {
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {user ? (
-
                     <>
                         <Stack.Screen name="MainTabs" component={TabNavigator} />
                         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+                        <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
                     </>
                 ) : (
                     <>

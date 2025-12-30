@@ -19,24 +19,39 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let unsubscribeDoc: (() => void) | undefined;
+
         const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+            // Clean up previous Firestore subscription if it exists
+            if (unsubscribeDoc) {
+                unsubscribeDoc();
+            }
+
             setUser(currentUser);
             if (currentUser) {
                 // Subscribe to user document in Firestore
                 const userDocRef = doc(db, 'users', currentUser.uid);
-                const unsubscribeDoc = onSnapshot(userDocRef, (doc) => {
+                unsubscribeDoc = onSnapshot(userDocRef, (doc) => {
                     if (doc.exists()) {
                         setUserData(doc.data() as UserData);
+                    } else {
+                        setUserData(null); // User document might have been deleted
                     }
                 });
-                return () => unsubscribeDoc();
+                // Ensure loading is set to false even if we are subscribing
+                setLoading(false);
             } else {
                 setUserData(null);
+                setLoading(false);
             }
-            setLoading(false);
         });
 
-        return () => unsubscribeAuth();
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeDoc) {
+                unsubscribeDoc();
+            }
+        };
     }, []);
 
     const signIn = async (email: string, password: string) => {
