@@ -14,8 +14,9 @@ import SignupScreen from '../screens/SignupScreen';
 import FeedScreenScreen from '../screens/FeedScreenScreen';
 import ChatScreen from '../screens/ChatScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { TabParamList } from '../types/tabParamList';
+import { TabParamList } from '../types/TabParamList';
 import MainHeader from '../components/MainHeader';
+import CreatePost from '../screens/CreatePost';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -93,6 +94,7 @@ export default function AppNavigator() {
                         <Stack.Screen name="MainTabs" component={TabNavigator} />
                         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
                         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+                        <Stack.Screen name="CreatePost" component={CreatePost} />
                     </>
                 ) : (
                     <>

@@ -11,10 +11,10 @@ import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/themeContext';
 import { RootStackParamList } from "../types/navigation";
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { TabParamList } from '../types/tabParamList';
+import { TabParamList } from '../types/TabParamList';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 type Props = CompositeScreenProps<
     BottomTabScreenProps<TabParamList, 'Profile'>,
     NativeStackScreenProps<RootStackParamList>
@@ -92,9 +92,6 @@ export default function ProfileScreen({ navigation }: Props) {
     );
 }
 
-// Add Navbar to imports
-import Navbar from '../components/Navbar';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
     container: {
