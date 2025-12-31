@@ -128,8 +128,7 @@ export default function FeedScreenScreen({ navigation }: Props) {
     };
 
     const handleComment = (postId: string) => {
-        // navigation.navigate('Comments', { postId });
-        console.log("Comment on post: ", postId);
+        navigation.navigate('CommentsScreen', { postId });
     };
 
     if (loading) {

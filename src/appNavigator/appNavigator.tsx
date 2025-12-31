@@ -17,6 +17,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { TabParamList } from '../types/TabParamList';
 import MainHeader from '../components/MainHeader';
 import CreatePost from '../screens/CreatePost';
+import CommentsScreen from '../screens/CommentsScreen';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -95,6 +96,7 @@ export default function AppNavigator() {
                         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
                         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
                         <Stack.Screen name="CreatePost" component={CreatePost} />
+                        <Stack.Screen name="CommentsScreen" component={CommentsScreen} />
                     </>
                 ) : (
                     <>

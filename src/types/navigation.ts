@@ -9,4 +9,5 @@ export type RootStackParamList = {
     FeedScreenScreen: undefined;
     MainTabs: { screen?: keyof TabParamList };
     CreatePost: undefined;
+    CommentsScreen: { postId: string };
 };
