@@ -15,7 +15,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
             card: isDarkMode ? '#1F2937' : '#FFFFFF',
             text: isDarkMode ? '#F9FAFB' : '#111827',
             subText: isDarkMode ? '#9CA3AF' : '#6B7280',
-            primary: '#007AFF',
+            primary: '#A4De02',
             border: isDarkMode ? '#374151' : '#E5E7EB',
             input: isDarkMode ? '#374151' : '#F9FAFB',
         },

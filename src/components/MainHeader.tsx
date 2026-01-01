@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Platform, StatusBar } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Platform, Image } from 'react-native';
 import { useTheme } from '../context/themeContext';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 const MainHeader = () => {
     const { colors } = useTheme();
@@ -14,12 +14,15 @@ const MainHeader = () => {
                 <View style={styles.content}>
                     {/* Left: Logo */}
                     <View style={styles.logoContainer}>
-                        <Text style={styles.logoText}>🔥</Text>
+                        <Image
+                            source={require('../../assets/icon.png')}
+                            style={styles.logoImage}
+                        />
                     </View>
 
                     {/* Middle: Search Bar */}
                     <View style={[styles.searchContainer, { backgroundColor: colors.input }]}>
-                        <Text style={[styles.searchIcon, { color: colors.subText }]}>🔍</Text>
+                        <Ionicons name="search-outline" size={18} color={colors.subText} style={styles.searchIcon} />
                         <TextInput
                             placeholder="Search..."
                             placeholderTextColor={colors.subText}
@@ -33,7 +36,7 @@ const MainHeader = () => {
                         onPress={() => navigation.navigate('SettingsScreen')}
                         activeOpacity={0.7}
                     >
-                        <Text style={[styles.hamburgerText, { color: colors.text }]}>☰</Text>
+                        <Ionicons name="menu-outline" size={28} color={colors.text} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -69,10 +72,12 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     logoContainer: {
-        marginRight: 15,
+        marginRight: 10,
     },
-    logoText: {
-        fontSize: 24,
+    logoImage: {
+        width: 32,
+        height: 32,
+        borderRadius: 8,
     },
     searchContainer: {
         flex: 1,

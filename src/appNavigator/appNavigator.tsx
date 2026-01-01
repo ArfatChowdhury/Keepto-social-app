@@ -18,6 +18,7 @@ import { TabParamList } from '../types/TabParamList';
 import MainHeader from '../components/MainHeader';
 import CreatePost from '../screens/CreatePost';
 import CommentsScreen from '../screens/CommentsScreen';
+import { Ionicons } from '@expo/vector-icons';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -38,6 +39,9 @@ const TabNavigator = () => {
                         backgroundColor: colors.card,
                         borderTopColor: colors.border,
                     },
+                    tabBarIndicatorStyle: {
+                        backgroundColor: colors.primary,
+                    },
                 }}
             >
                 <Tab.Screen
@@ -45,8 +49,8 @@ const TabNavigator = () => {
                     component={FeedScreenScreen}
                     options={{
                         tabBarLabel: 'Feed',
-                        tabBarIcon: ({ color }) => (
-                            <Text style={{ color, fontSize: 20 }}>🏠</Text>
+                        tabBarIcon: ({ color, focused }) => (
+                            <Ionicons name={focused ? "newspaper" : "newspaper-outline"} size={20} color={color} />
                         ),
                     }}
                 />
@@ -55,8 +59,8 @@ const TabNavigator = () => {
                     component={ChatScreen}
                     options={{
                         tabBarLabel: 'Chat',
-                        tabBarIcon: ({ color }) => (
-                            <Text style={{ color, fontSize: 20 }}>💬</Text>
+                        tabBarIcon: ({ color, focused }) => (
+                            <Ionicons name={focused ? "chatbubbles" : "chatbubbles-outline"} size={20} color={color} />
                         ),
                     }}
                 />
@@ -65,8 +69,8 @@ const TabNavigator = () => {
                     component={ProfileScreen}
                     options={{
                         tabBarLabel: 'Profile',
-                        tabBarIcon: ({ color }) => (
-                            <Text style={{ color, fontSize: 20 }}>👤</Text>
+                        tabBarIcon: ({ color, focused }) => (
+                            <Ionicons name={focused ? "person" : "person-outline"} size={20} color={color} />
                         ),
                     }}
                 />

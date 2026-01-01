@@ -175,7 +175,10 @@ export default function FeedScreenScreen({ navigation }: Props) {
                     return (
                         <View key={post.id} style={[styles.postCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                             <View style={styles.postHeader}>
-                                <View style={styles.postHeaderLeft}>
+                                <TouchableOpacity
+                                    style={styles.postHeaderLeft}
+                                    onPress={() => navigation.navigate('Profile', { userId: post.userId })}
+                                >
                                     {authorPhoto ? (
                                         <Image source={{ uri: authorPhoto }} style={styles.avatar} />
                                     ) : (
@@ -189,7 +192,7 @@ export default function FeedScreenScreen({ navigation }: Props) {
                                             {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleString() : 'Just now'}
                                         </Text>
                                     </View>
-                                </View>
+                                </TouchableOpacity>
                             </View>
 
                             {post.content ? (
