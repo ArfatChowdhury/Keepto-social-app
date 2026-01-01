@@ -3,7 +3,7 @@ import { TabParamList } from "./TabParamList";
 export type RootStackParamList = {
     SignInScreen: undefined;
     SignupScreen: undefined;
-    ProfileScreen: undefined;
+    ProfileScreen: { userId?: string };
     SettingsScreen: undefined;
     EditProfileScreen: undefined;
     FeedScreenScreen: undefined;
