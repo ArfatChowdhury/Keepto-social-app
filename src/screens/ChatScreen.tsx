@@ -1,4 +1,3 @@
-```
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { GiftedChat, IMessage, Bubble, InputToolbar, Send } from 'react-native-gifted-chat';
@@ -123,11 +122,7 @@ export default function ChatScreen() {
                 renderBubble={renderBubble}
                 renderInputToolbar={renderInputToolbar}
                 renderSend={renderSend}
-                placeholder="Type a message..."
-                alwaysShowSend
-                scrollToBottom
-                showUserAvatar
-                renderAvatarOnTop
+                textInputProps={{ placeholder: "Type a message..." }}
             />
         </View>
     );
@@ -143,4 +138,3 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 });
-```
