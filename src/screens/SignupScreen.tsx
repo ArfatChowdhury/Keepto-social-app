@@ -4,8 +4,9 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import { useAuth } from '../context/authContext'
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
+import { TabParamList } from "../types/TabParamList";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SignupScreen'>;
+type Props = NativeStackScreenProps<RootStackParamList | TabParamList, 'SignupScreen', "MainTabs">;
 
 const SignupScreen = ({ navigation }: Props) => {
     const [firstName, setFirstName] = useState('')

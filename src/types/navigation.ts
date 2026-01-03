@@ -10,4 +10,5 @@ export type RootStackParamList = {
     MainTabs: { screen?: keyof TabParamList };
     CreatePost: undefined;
     CommentsScreen: { postId: string };
+
 };
