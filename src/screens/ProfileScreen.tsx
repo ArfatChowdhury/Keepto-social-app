@@ -143,7 +143,7 @@ export default function ProfileScreen({ navigation, route }: Props) {
                         ) : (
                             <TouchableOpacity
                                 style={[styles.actionButton, { backgroundColor: colors.primary }]}
-                                onPress={() => { /* TODO: Implement messaging */ }}
+                                onPress={() => navigation.navigate('ChatScreen', { userId: profileData?.uid })}
                             >
                                 <Ionicons name="chatbubble-ellipses-outline" size={18} color="#fff" />
                                 <Text style={styles.actionButtonText}>Message</Text>

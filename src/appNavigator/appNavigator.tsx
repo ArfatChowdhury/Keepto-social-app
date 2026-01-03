@@ -12,6 +12,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import SignInScreen from '../screens/SignInScreen';
 import SignupScreen from '../screens/SignupScreen';
 import FeedScreenScreen from '../screens/FeedScreenScreen';
+import ChatListScreen from '../screens/ChatListScreen';
 import ChatScreen from '../screens/ChatScreen';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { TabParamList } from '../types/TabParamList';
@@ -56,7 +57,7 @@ const TabNavigator = () => {
                 />
                 <Tab.Screen
                     name="Chat"
-                    component={ChatScreen}
+                    component={ChatListScreen}
                     options={{
                         tabBarLabel: 'Chat',
                         tabBarIcon: ({ color, focused }) => (
@@ -97,6 +98,7 @@ export default function AppNavigator() {
                 {user ? (
                     <>
                         <Stack.Screen name="MainTabs" component={TabNavigator} />
+                        <Stack.Screen name="ChatScreen" component={ChatScreen} />
                         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
                         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
                         <Stack.Screen name="CreatePost" component={CreatePost} />

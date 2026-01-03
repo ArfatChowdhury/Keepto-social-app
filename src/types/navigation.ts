@@ -7,8 +7,9 @@ export type RootStackParamList = {
     SettingsScreen: undefined;
     EditProfileScreen: undefined;
     FeedScreenScreen: undefined;
-    MainTabs: { screen?: keyof TabParamList };
+    MainTabs: { screen?: keyof TabParamList } | undefined;
     CreatePost: undefined;
+    ChatScreen: { userId?: string };
     CommentsScreen: { postId: string };
 
 };

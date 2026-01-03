@@ -6,7 +6,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/navigation";
 import { TabParamList } from "../types/TabParamList";
 
-type Props = NativeStackScreenProps<RootStackParamList | TabParamList, 'SignupScreen', "MainTabs">;
+type Props = NativeStackScreenProps<RootStackParamList, 'SignupScreen'>;
 
 const SignupScreen = ({ navigation }: Props) => {
     const [firstName, setFirstName] = useState('')
