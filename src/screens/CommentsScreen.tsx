@@ -131,7 +131,16 @@ export default function CommentsScreen({ route, navigation }: Props) {
     const renderHeader = () => {
         if (!post) return null;
         return (
-            <View style={[styles.postHeader, { borderBottomColor: colors.border }]}>
+            <TouchableOpacity
+                style={[styles.postHeader, { borderBottomColor: colors.border }]}
+                onPress={() => {
+                    if (post.userId === user?.uid) {
+                        navigation.navigate('MainTabs', { screen: 'Profile' });
+                    } else {
+                        navigation.navigate('UserProfileScreen', { userId: post.userId });
+                    }
+                }}
+            >
                 <View style={styles.authorRow}>
                     {post.authorPhoto ? (
                         <Image source={{ uri: post.authorPhoto }} style={styles.avatar} />
@@ -151,7 +160,7 @@ export default function CommentsScreen({ route, navigation }: Props) {
                 {post.image && (
                     <Image source={{ uri: post.image }} style={styles.postImage} />
                 )}
-            </View>
+            </TouchableOpacity>
         );
     };
 
@@ -162,13 +171,23 @@ export default function CommentsScreen({ route, navigation }: Props) {
 
         return (
             <View style={styles.commentItem}>
-                {authorPhoto ? (
-                    <Image source={{ uri: authorPhoto }} style={styles.commentAvatar} />
-                ) : (
-                    <View style={[styles.commentAvatarPlaceholder, { backgroundColor: colors.border }]}>
-                        <Ionicons name="person" size={14} color={colors.subText} />
-                    </View>
-                )}
+                <TouchableOpacity
+                    onPress={() => {
+                        if (item.userId === user?.uid) {
+                            navigation.navigate('MainTabs', { screen: 'Profile' });
+                        } else {
+                            navigation.navigate('UserProfileScreen', { userId: item.userId });
+                        }
+                    }}
+                >
+                    {authorPhoto ? (
+                        <Image source={{ uri: authorPhoto }} style={styles.commentAvatar} />
+                    ) : (
+                        <View style={[styles.commentAvatarPlaceholder, { backgroundColor: colors.border }]}>
+                            <Ionicons name="person" size={14} color={colors.subText} />
+                        </View>
+                    )}
+                </TouchableOpacity>
                 <View style={[styles.commentBubble, { backgroundColor: colors.card, borderColor: colors.border }]}>
                     <Text style={[styles.commentAuthor, { color: colors.text }]}>{authorName}</Text>
                     <Text style={[styles.commentText, { color: colors.text }]}>{item.text}</Text>

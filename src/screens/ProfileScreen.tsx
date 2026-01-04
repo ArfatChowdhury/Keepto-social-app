@@ -88,14 +88,12 @@ export default function ProfileScreen({ navigation }: Props) {
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
                 <View style={styles.header}>
-                    {isOwner && (
-                        <TouchableOpacity
-                            style={styles.settingsIcon}
-                            onPress={() => navigation.getParent()?.navigate('SettingsScreen')}
-                        >
-                            <Ionicons name="settings-outline" size={24} color={colors.text} />
-                        </TouchableOpacity>
-                    )}
+                    <TouchableOpacity
+                        style={styles.settingsIcon}
+                        onPress={() => navigation.navigate('SettingsScreen')}
+                    >
+                        <Ionicons name="settings-outline" size={24} color={colors.text} />
+                    </TouchableOpacity>
 
                     <View style={styles.photoContainer}>
                         <Image
