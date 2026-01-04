@@ -28,7 +28,7 @@ type Props = CompositeScreenProps<
 
 const { width } = Dimensions.get('window');
 
-export default function ProfileScreen({ navigation, route }: Props) {
+export default function ProfileScreen({ navigation }: Props) {
     const { user, userData: currentUserData } = useAuth();
     const { colors } = useTheme();
     const [activeTab, setActiveTab] = useState<'posts' | 'about'>('posts');
@@ -36,39 +36,17 @@ export default function ProfileScreen({ navigation, route }: Props) {
     const [userPosts, setUserPosts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const targetUserId = route.params?.userId || user?.uid;
-    const isOwner = targetUserId === user?.uid;
-
     useEffect(() => {
-        if (!targetUserId) return;
+        if (!user) return;
 
         setLoading(true);
-        // Fetch profile data
-        const fetchProfile = async () => {
-            if (isOwner) {
-                setProfileData(currentUserData);
-                setLoading(false);
-            } else {
-                try {
-                    const docRef = doc(db, 'users', targetUserId);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        setProfileData(docSnap.data());
-                    }
-                } catch (error) {
-                    console.error("Error fetching profile:", error);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
+        setProfileData(currentUserData);
+        setLoading(false);
 
-        fetchProfile();
-
-        // Fetch user's posts
+        // Fetch user posts
         const postsQuery = query(
             collection(db, 'posts'),
-            where('userId', '==', targetUserId),
+            where('userId', '==', user.uid),
             orderBy('createdAt', 'desc')
         );
 
@@ -81,7 +59,7 @@ export default function ProfileScreen({ navigation, route }: Props) {
         });
 
         return () => unsubscribe();
-    }, [targetUserId, currentUserData]);
+    }, [user, currentUserData]);
 
     if (loading) {
         return (
@@ -132,23 +110,20 @@ export default function ProfileScreen({ navigation, route }: Props) {
                     <Text style={[styles.emailText, { color: colors.subText }]}>{profileData?.email || user?.email}</Text>
 
                     <View style={styles.buttonContainer}>
-                        {isOwner ? (
-                            <TouchableOpacity
-                                style={[styles.actionButton, { backgroundColor: colors.primary }]}
-                                onPress={() => navigation.navigate('EditProfileScreen')}
-                            >
-                                <Ionicons name="create-outline" size={18} color="#fff" />
-                                <Text style={styles.actionButtonText}>Edit Profile</Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity
-                                style={[styles.actionButton, { backgroundColor: colors.primary }]}
-                                onPress={() => navigation.navigate('ChatScreen', { userId: profileData?.uid })}
-                            >
-                                <Ionicons name="chatbubble-ellipses-outline" size={18} color="#fff" />
-                                <Text style={styles.actionButtonText}>Message</Text>
-                            </TouchableOpacity>
-                        )}
+                        <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: colors.primary }]}
+                            onPress={() => navigation.navigate('EditProfileScreen')}
+                        >
+                            <Ionicons name="create-outline" size={18} color="#fff" />
+                            <Text style={styles.actionButtonText}>Edit Profile</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.actionButton, { backgroundColor: colors.border, marginLeft: 10 }]}
+                            onPress={() => navigation.navigate('SettingsScreen')}
+                        >
+                            <Ionicons name="settings-outline" size={18} color={colors.text} />
+                            <Text style={[styles.actionButtonText, { color: colors.text }]}>Settings</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
 

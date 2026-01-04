@@ -177,7 +177,13 @@ export default function FeedScreenScreen({ navigation }: Props) {
                             <View style={styles.postHeader}>
                                 <TouchableOpacity
                                     style={styles.postHeaderLeft}
-                                    onPress={() => navigation.navigate('Profile', { userId: post.userId })}
+                                    onPress={() => {
+                                        if (post.userId === user?.uid) {
+                                            navigation.navigate('MainTabs', { screen: 'Profile' });
+                                        } else {
+                                            navigation.navigate('UserProfileScreen', { userId: post.userId });
+                                        }
+                                    }}
                                 >
                                     {authorPhoto ? (
                                         <Image source={{ uri: authorPhoto }} style={styles.avatar} />

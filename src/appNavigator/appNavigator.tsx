@@ -7,6 +7,7 @@ import { useAuth } from '../context/authContext';
 import { useTheme } from '../context/themeContext';
 import { RootStackParamList } from '../types/navigation';
 import ProfileScreen from '../screens/ProfileScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import SignInScreen from '../screens/SignInScreen';
@@ -99,6 +100,7 @@ export default function AppNavigator() {
                     <>
                         <Stack.Screen name="MainTabs" component={TabNavigator} />
                         <Stack.Screen name="ChatScreen" component={ChatScreen} />
+                        <Stack.Screen name="UserProfileScreen" component={UserProfileScreen} />
                         <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
                         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
                         <Stack.Screen name="CreatePost" component={CreatePost} />

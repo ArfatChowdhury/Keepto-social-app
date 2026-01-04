@@ -34,10 +34,10 @@ export default function ChatListScreen({ navigation }: Props) {
     useEffect(() => {
         if (!user) return;
 
+        // Simplified query to avoid index requirements
         const q = query(
             collection(db, 'chats'),
-            where('participants', 'array-contains', user.uid),
-            orderBy('lastMessageAt', 'desc')
+            where('participants', 'array-contains', user.uid)
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -45,6 +45,14 @@ export default function ChatListScreen({ navigation }: Props) {
                 id: doc.id,
                 ...doc.data()
             }));
+
+            // Sort by lastMessageAt in-memory
+            chatsData.sort((a: any, b: any) => {
+                const timeA = a.lastMessageAt?.seconds || 0;
+                const timeB = b.lastMessageAt?.seconds || 0;
+                return timeB - timeA;
+            });
+
             setChats(chatsData);
             setLoading(false);
         }, (error) => {
@@ -96,21 +104,6 @@ export default function ChatListScreen({ navigation }: Props) {
                 data={chats}
                 keyExtractor={item => item.id}
                 renderItem={renderChatItem}
-                ListHeaderComponent={
-                    <TouchableOpacity
-                        style={[styles.communityItem, { backgroundColor: colors.card, borderColor: colors.border }]}
-                        onPress={() => navigation.navigate('ChatScreen', { userId: undefined })}
-                    >
-                        <View style={[styles.communityIcon, { backgroundColor: colors.primary }]}>
-                            <Ionicons name="people" size={24} color="#fff" />
-                        </View>
-                        <View style={styles.chatInfo}>
-                            <Text style={[styles.chatName, { color: colors.text }]}>Community Chat</Text>
-                            <Text style={[styles.lastMessage, { color: colors.subText }]}>Join the global conversation</Text>
-                        </View>
-                        <Ionicons name="chevron-forward" size={20} color={colors.subText} />
-                    </TouchableOpacity>
-                }
                 ListEmptyComponent={
                     loading ? (
                         <ActivityIndicator style={styles.loader} color={colors.primary} />

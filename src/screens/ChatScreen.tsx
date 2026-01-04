@@ -38,21 +38,18 @@ export default function ChatScreen({ route, navigation }: Props) {
     const { colors } = useTheme();
     const flatListRef = useRef<FlatList>(null);
 
-    const { userId } = route.params || {};
-    const isPrivate = !!userId;
+    const { userId } = route.params;
     const chatId = user && userId ? [user.uid, userId].sort().join('_') : null;
+    const [recipientName, setRecipientName] = useState('Chat');
 
     useEffect(() => {
-        const collectionName = isPrivate ? 'private_messages' : 'community_chat';
-        let q = query(collection(db, collectionName), orderBy('createdAt', 'desc'));
+        if (!chatId) return;
 
-        if (isPrivate && chatId) {
-            q = query(
-                collection(db, 'private_messages'),
-                where('chatId', '==', chatId),
-                orderBy('createdAt', 'desc')
-            );
-        }
+        const q = query(
+            collection(db, 'private_messages'),
+            where('chatId', '==', chatId),
+            orderBy('createdAt', 'desc')
+        );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const messagesData = snapshot.docs.map(doc => ({
@@ -67,21 +64,35 @@ export default function ChatScreen({ route, navigation }: Props) {
             setLoading(false);
         });
 
+        // Fetch recipient name for header
+        const fetchRecipient = async () => {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', userId));
+                if (userDoc.exists()) {
+                    setRecipientName(userDoc.data().displayName || 'User');
+                }
+            } catch (error) {
+                console.error("Error fetching recipient: ", error);
+            }
+        };
+        fetchRecipient();
+
         return () => unsubscribe();
-    }, [isPrivate, chatId]);
+    }, [chatId, userId]);
 
     const sendMessage = async () => {
-        if (inputText.trim() === '' || !user || !userData) return;
+        if (inputText.trim() === '' || !user || !userData || !chatId) return;
 
         const messageText = inputText;
         setInputText('');
 
         try {
-            const collectionName = isPrivate ? 'private_messages' : 'community_chat';
             const timestamp = serverTimestamp();
             const messageData: any = {
                 text: messageText,
                 createdAt: timestamp,
+                chatId: chatId,
+                participants: [user.uid, userId],
                 user: {
                     _id: user.uid,
                     name: userData.displayName || 'Anonymous',
@@ -89,45 +100,38 @@ export default function ChatScreen({ route, navigation }: Props) {
                 },
             };
 
-            if (isPrivate && chatId) {
-                messageData.chatId = chatId;
-                messageData.participants = [user.uid, userId];
+            // Update/Create chat document for the list view
+            const chatRef = doc(db, 'chats', chatId);
+            const chatDoc = await getDoc(chatRef);
 
-                // Update/Create chat document for the list view
-                const chatRef = doc(db, 'chats', chatId);
-                const chatDoc = await getDoc(chatRef);
+            let participantData = chatDoc.exists() ? chatDoc.data().participantData || {} : {};
 
-                let participantData = chatDoc.exists() ? chatDoc.data().participantData || {} : {};
-
-                // Ensure we have current participant data
-                if (!participantData[user.uid]) {
-                    participantData[user.uid] = {
-                        displayName: userData.displayName,
-                        photoURL: userData.photoURL
-                    };
-                }
-
-                // Attempt to fetch target user data if not present
-                if (!participantData[userId]) {
-                    const targetUserDoc = await getDoc(doc(db, 'users', userId));
-                    if (targetUserDoc.exists()) {
-                        const targetData = targetUserDoc.data();
-                        participantData[userId] = {
-                            displayName: targetData.displayName,
-                            photoURL: targetData.photoURL
-                        };
-                    }
-                }
-
-                await setDoc(chatRef, {
-                    lastMessage: messageText,
-                    lastMessageAt: timestamp,
-                    participants: [user.uid, userId],
-                    participantData: participantData
-                }, { merge: true });
+            if (!participantData[user.uid]) {
+                participantData[user.uid] = {
+                    displayName: userData.displayName,
+                    photoURL: userData.photoURL
+                };
             }
 
-            await addDoc(collection(db, collectionName), messageData);
+            if (!participantData[userId]) {
+                const targetUserDoc = await getDoc(doc(db, 'users', userId));
+                if (targetUserDoc.exists()) {
+                    const targetData = targetUserDoc.data();
+                    participantData[userId] = {
+                        displayName: targetData.displayName,
+                        photoURL: targetData.photoURL
+                    };
+                }
+            }
+
+            await setDoc(chatRef, {
+                lastMessage: messageText,
+                lastMessageAt: timestamp,
+                participants: [user.uid, userId],
+                participantData: participantData
+            }, { merge: true });
+
+            await addDoc(collection(db, 'private_messages'), messageData);
         } catch (error) {
             console.error("Error sending message: ", error);
         }
@@ -201,13 +205,11 @@ export default function ChatScreen({ route, navigation }: Props) {
             keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
         >
             <View style={[styles.header, { borderBottomColor: colors.border }]}>
-                {isPrivate && (
-                    <TouchableOpacity onPress={() => navigation.setParams({ userId: undefined })} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color={colors.text} />
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Ionicons name="arrow-back" size={24} color={colors.text} />
+                </TouchableOpacity>
                 <Text style={[styles.headerTitle, { color: colors.text }]}>
-                    {isPrivate ? 'Private Chat' : 'Community Chat'}
+                    {recipientName}
                 </Text>
             </View>
 

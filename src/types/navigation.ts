@@ -11,5 +11,5 @@ export type RootStackParamList = {
     CreatePost: undefined;
     ChatScreen: { userId?: string };
     CommentsScreen: { postId: string };
-
+    UserProfileScreen: { userId: string };
 };
